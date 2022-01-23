@@ -6,7 +6,7 @@ RenderTexture:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: AnyUI_RenderTexturePiechartExample81d39e51-d4c9-41ae-bc9a-884934e21b07
+  m_Name: AnyUI_RenderTextureStackedBarchartExampled2ef1270-50a1-46a5-8ee3-c5649415ba93
   m_ImageContentsHash:
     serializedVersion: 2
     Hash: 00000000000000000000000000000000
@@ -15,7 +15,7 @@ RenderTexture:
   m_IsAlphaChannelOptional: 0
   serializedVersion: 3
   m_Width: 1024
-  m_Height: 1177
+  m_Height: 640
   m_AntiAliasing: 1
   m_MipCount: -1
   m_DepthFormat: 0
