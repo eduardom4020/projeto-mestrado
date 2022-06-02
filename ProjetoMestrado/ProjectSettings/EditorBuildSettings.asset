@@ -4,5 +4,11 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
-  m_configObjects: {}
+  m_Scenes:
+  - enabled: 1
+    path: Assets/Scenes/SituatedToolkit.unity
+    guid: f5308f59c5a99674ab99609faefb3f4c
+  m_configObjects:
+    UnityEditor.XR.ARCore.ARCoreSettings: {fileID: 11400000, guid: 79488b1fe82cb4446980749ebe1da495, type: 2}
+    com.unity.input.settings: {fileID: 11400000, guid: 3369270068e41fa458812f03f053b825, type: 2}
+    com.unity.xr.management.loader_settings: {fileID: 11400000, guid: 5ed562290297e344a8b82ae11a24e4f8, type: 2}
