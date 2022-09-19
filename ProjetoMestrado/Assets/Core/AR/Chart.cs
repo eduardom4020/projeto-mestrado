@@ -216,14 +216,18 @@ public class Chart : MonoBehaviour
 
                 for (var i = seriesCount; i < NumberOfSeries; i++)
                 {
+                    Debug.Log("Adding series");
+                    Debug.Log($"Series_{i + 1}");
                     PiechartSeries[i] = gameObject.AddComponent<PiechartSeries>();
                     PiechartSeries[i].Init($"Series_{i + 1}");
+                    PiechartSeries[i].Render(ObjectIterator.GetChildByNameAndLayer("Canvas", 5, transform)?.transform);
                 }
             }
             else if(NumberOfSeries < seriesCount)
             {
                 for (var i = seriesCount - 1; i >= NumberOfSeries; i--)
                 {
+                    PiechartSeries[i].Destroy(ObjectIterator.GetChildByNameAndLayer("Canvas", 5, transform)?.transform);
                     DestroyImmediate(PiechartSeries[i]);
                     Array.Resize(ref PiechartSeries, i);
                 }

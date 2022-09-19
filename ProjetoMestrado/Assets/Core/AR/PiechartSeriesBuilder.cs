@@ -57,15 +57,24 @@ public class PiechartSeriesBuilder : MonoBehaviour
                     .Select(x => new SeriesValue { Key = x.Key, Value = x.Value })
                     .ToList();
 
-                //Debug.Log("ENTRIES > PIECHART SERIES ENTRIES");
-                //Debug.Log(updatedEntries.Count);
-                //Debug.Log(newEntries.Count);
-
-                PiechartSeries.AddEntries(newEntries);
+                if(newEntries.Count > 0)
+                {
+                    PiechartSeries.AddEntries(newEntries);
+                }
             }
             else
             {
                 PiechartSeries.RemoveEntries(Entries.Count, PiechartSeries.Entries.Count - Entries.Count);
+            }
+
+            var entryKeyChanged = PiechartSeries.Entries.Where((x, index) => x.Key != Entries[index].Key).Count() > 0;
+
+            if (entryKeyChanged)
+            {
+                for (var i = 0; i < PiechartSeries.Entries.Count; i++)
+                {
+                    Entries[i].Key = PiechartSeries.Entries[i].Key;
+                }
             }
         }
     }

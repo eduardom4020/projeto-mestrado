@@ -36,6 +36,8 @@ public class SeriesValue
         return seriesValueA.Key != seriesValueB.Key || seriesValueA.Value != seriesValueB.Value;
     }
 
+    public Func<SeriesValue, string, string> OnKeyChanged { get; set; } = null;
+    public Func<SeriesValue, float, string> OnValueChanged { get; set; } = null;
 
     private string _Key;
     public string Key
@@ -43,16 +45,15 @@ public class SeriesValue
         get { return _Key; }
         set
         {
-            //Debug.Log("KEY CHANGED?");
-            //Debug.Log(_Key);
-            //Debug.Log(value);
-            //Debug.Log(value == (_Key ?? string.Empty));
             if ((_Key ?? string.Empty) == value) return;
 
             var oldVaue = _Key;
             _Key = value;
 
-            OnKeyChanged(oldVaue);
+            if(OnKeyChanged != null)
+            {
+                OnKeyChanged(this, oldVaue);
+            }
         }
     }
 
@@ -67,22 +68,11 @@ public class SeriesValue
             var oldVaue = _Value;
             _Value = value;
 
-            OnValueChanged(oldVaue);
+            if(OnValueChanged != null)
+            {
+                OnValueChanged(this, oldVaue);
+            }
         }
-    }
-
-    protected void OnKeyChanged(string oldValue)
-    {
-        Debug.Log("OnKeyChanged");
-        Debug.Log("Current value ");
-        Debug.Log(Key);
-        Debug.Log("Old value");
-        Debug.Log(oldValue);
-    }
-
-    protected void OnValueChanged(float oldValue)
-    {
-        Debug.Log("OnValueChanged");
     }
 
     public override bool Equals(object obj)
@@ -233,12 +223,24 @@ public abstract class Series : MonoBehaviour
         Entries = new List<SeriesValue>();
     }
 
-    protected string GameObjectSeriesName
+    public string GameObjectSeriesName
     {
         get { return $"Series_{Name.Trim()}"; }
     }
 
-    public abstract void Render(Transform parent);
+    protected GameObject GetEntriesGameObject()
+    {
+        var seriesGameObject = ObjectIterator.GetChildByNameAndLayer(GameObjectSeriesName, 5, transform);
+
+        if (seriesGameObject == null)
+        {
+            return null;
+        }
+
+        var entriesGameObject = ObjectIterator.GetChildByNameAndLayer("Entries", 5, seriesGameObject.transform);
+
+        return entriesGameObject;
+    }
 
     public override bool Equals(object obj)
     {
@@ -259,12 +261,27 @@ public abstract class Series : MonoBehaviour
 
     protected void OnNameChanged(string oldVaue)
     {
-        Debug.Log("OnNameChanged");
+        var instance = ObjectIterator.GetChildByNameAndLayer($"Series_{oldVaue}", 5, transform);
+
+        if(instance != null)
+        {
+            instance.name = $"Series_{Name}";
+        }
     }
-    protected void OnEntriesChanged(List<SeriesValue> oldVaue)
+    protected virtual void OnEntriesChanged(List<SeriesValue> oldValue)
     {
+        foreach(var entry in Entries)
+        {
+            entry.OnKeyChanged ??= OnKeyChanged;
+            entry.OnValueChanged ??= OnValueChanged;
+        }
+
         Debug.Log("OnEntriesChanged");
     }
+
+    protected abstract string OnKeyChanged(SeriesValue seriesValue, string oldValue);
+
+    protected abstract string OnValueChanged(SeriesValue seriesValue, float oldValue);
 
     public void AddEntry(SeriesValue Entry)
     {
@@ -289,4 +306,12 @@ public abstract class Series : MonoBehaviour
 
         OnEntriesChanged(oldValue);
     }
+
+    public abstract void Render(Transform parent);
+    public void Destroy(Transform parent)
+    {
+        DestroyImmediate(ObjectIterator.GetChildByNameAndLayer(GameObjectSeriesName, 5, parent));
+    }
+
+    public abstract void RenderEntry(SeriesValue Entry, Transform parent);
 }
