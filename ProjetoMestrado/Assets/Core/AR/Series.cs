@@ -200,10 +200,41 @@ public abstract class Series : MonoBehaviour
                 }
             }
 
-            var oldVaue = _Entries;
-            _Entries = value;
+            if(_Entries == null)
+            {
+                _Entries = new List<SeriesValue>();
+            }
 
-            OnEntriesChanged(oldVaue);
+            var oldValue = new List<SeriesValue>(_Entries);
+
+            if (value.Count >= _Entries.Count)
+            {
+                var updatedEntries = value
+                .Take(_Entries.Count)
+                .ToList();
+
+                for (int i = 0; i < updatedEntries.Count; i++)
+                {
+                    _Entries[i].Key = updatedEntries[i].Key;
+                    _Entries[i].Value = updatedEntries[i].Value;
+                }
+
+                var newEntries = value
+                    .Skip(_Entries.Count)
+                    .Select(x => new SeriesValue { Key = x.Key, Value = x.Value })
+                    .ToList();
+
+                if (newEntries.Count > 0)
+                {
+                    _Entries.AddRange(newEntries);
+                }
+            }
+            else
+            {
+                _Entries.RemoveRange(value.Count, _Entries.Count - value.Count);
+            }
+
+            OnEntriesChanged(oldValue);
         }
     }
 
@@ -270,7 +301,16 @@ public abstract class Series : MonoBehaviour
     }
     protected virtual void OnEntriesChanged(List<SeriesValue> oldValue)
     {
-        foreach(var entry in Entries)
+        var entriesToRemove = oldValue.Skip(Entries.Count).Take(oldValue.Count - Entries.Count);
+        foreach (var entryToRemove in entriesToRemove)
+        {
+            DestroyImmediate
+            (
+                ObjectIterator.GetChildByNameAndLayer($"{GameObjectSeriesName}_{entryToRemove.Key}", 5, transform)
+            );
+        }
+
+        foreach (var entry in Entries)
         {
             entry.OnKeyChanged ??= OnKeyChanged;
             entry.OnValueChanged ??= OnValueChanged;
@@ -283,29 +323,29 @@ public abstract class Series : MonoBehaviour
 
     protected abstract string OnValueChanged(SeriesValue seriesValue, float oldValue);
 
-    public void AddEntry(SeriesValue Entry)
-    {
-        var oldValue = new List<SeriesValue>(Entries);
-        Entries.Add(Entry);
+    //public void AddEntry(SeriesValue Entry)
+    //{
+    //    var oldValue = new List<SeriesValue>(Entries);
+    //    Entries.Add(Entry);
 
-        OnEntriesChanged(oldValue);
-    }
+    //    OnEntriesChanged(oldValue);
+    //}
 
-    public void AddEntries(List<SeriesValue> NewEntries)
-    {
-        var oldValue = new List<SeriesValue>(Entries);
-        Entries.AddRange(NewEntries);
+    //public void AddEntries(List<SeriesValue> NewEntries)
+    //{
+    //    var oldValue = new List<SeriesValue>(Entries);
+    //    Entries.AddRange(NewEntries);
 
-        OnEntriesChanged(oldValue);
-    }
+    //    OnEntriesChanged(oldValue);
+    //}
 
-    public void RemoveEntries(int index, int count)
-    {
-        var oldValue = new List<SeriesValue>(Entries);
-        Entries.RemoveRange(index, count);
+    //public void RemoveEntries(int index, int count)
+    //{
+    //    var oldValue = new List<SeriesValue>(Entries);
+    //    Entries.RemoveRange(index, count);
 
-        OnEntriesChanged(oldValue);
-    }
+    //    OnEntriesChanged(oldValue);
+    //}
 
     public abstract void Render(Transform parent);
     public void Destroy(Transform parent)

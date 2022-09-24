@@ -53,7 +53,7 @@ public abstract class ChartDrawer
         }
 
         if(!Mounted || RenderCamera == null)
-            RenderCamera = ObjectIterator.GetChildByNameAndLayer("RenderCamera", 5, currTransform)?.GetComponent<Camera>();
+            RenderCamera = ObjectIterator.GetChildByNameAndLayer("Camera", 5, currTransform)?.GetComponent<Camera>();
         
         if(!Mounted || RenderCamera != null && RenderCamera.targetTexture == null)
             RenderCamera.targetTexture = RenderTexture;
@@ -64,7 +64,7 @@ public abstract class ChartDrawer
             RenderMaterial.SetTexture("_MainTex", RenderCamera.targetTexture);
         }
 
-        var mesh = ObjectIterator.GetChildByNameAndLayer("WorldSpaceProjection", 0, currTransform)?.GetComponent<MeshRenderer>();
+        var mesh = ObjectIterator.GetChildByNameAndLayer("RenderedSurface", 0, currTransform)?.GetComponent<MeshRenderer>();
 
         if (RenderMaterial != null)
             mesh.sharedMaterial = RenderMaterial;

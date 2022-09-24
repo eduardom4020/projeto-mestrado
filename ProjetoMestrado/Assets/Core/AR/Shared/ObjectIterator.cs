@@ -25,4 +25,26 @@ public static class ObjectIterator
 
         return iterationResult;
     }
+
+    public static List<GameObject> GetChildsByNameSimilaityAndLayer(string name, int layerNum, Transform currTransform)
+    {
+        List<GameObject> iterationResults = new List<GameObject>();
+
+        foreach (Transform child in currTransform)
+        {
+            if (child.gameObject.name.Contains(name) && child.gameObject.layer == layerNum)
+            {
+                iterationResults.Add(child.gameObject);
+            }
+            else
+            {
+                var childIterationResults = GetChildsByNameSimilaityAndLayer(name, layerNum, child);
+
+                if (childIterationResults != null)
+                    iterationResults.AddRange(childIterationResults);
+            }
+        }
+
+        return iterationResults;
+    }
 }

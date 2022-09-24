@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 [ExecuteInEditMode]
@@ -56,10 +57,12 @@ public class ChartBuilder : MonoBehaviour
         {
             var PiechartSeries = GetComponents<PiechartSeries>();
             var PiechartSeriesBuilders = GetComponents<PiechartSeriesBuilder>();
-
+            
             for (int i = 0; i < PiechartSeries.Length; i++)
             {
-                PiechartSeriesBuilders[i].Init(PiechartSeries[i]);
+                PiechartSeriesBuilders[i].PiechartSeries = PiechartSeries[i];
+                PiechartSeriesBuilders[i].Name = PiechartSeries[i].Name;
+                PiechartSeriesBuilders[i].Entries = PiechartSeries[i].Entries.Select(x => new SeriesValueBuilder(x.Key, x.Value)).ToList();
             }
         }
     }
@@ -81,6 +84,7 @@ public class ChartBuilder : MonoBehaviour
         if(Chart == null)
         {
             SetChart();
+            //FlushSeriesBuildersComponents();
         }
 
         var numberOfSeriesChanged = Chart.NumberOfSeries != NumberOfSeries;

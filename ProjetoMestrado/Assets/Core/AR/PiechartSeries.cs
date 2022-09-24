@@ -21,11 +21,6 @@ public class PiechartSeries : Series
     {
     }
 
-    //public static PiechartSeries FromSeries(Series series)
-    //{
-    //    return new PiechartSeries(series.Name, series.Entries);
-    //}
-
     public override void Render(Transform parent)
     {
         Debug.Log("Rendered series");
@@ -41,32 +36,6 @@ public class PiechartSeries : Series
             new Color32(24, 66, 137, 255),
             new Color32(165, 64, 217, 255)
         };
-
-        //var piechartEntry = Resources.Load<GameObject>("Charts/Series/PiechartSeries/Entry");
-
-
-        //renderedSeries = ObjectIterator.GetChildByNameAndLayer(instantiatedObject.name, 5, parent);
-        //renderedSeries.name = GameObjectSeriesName;
-
-        //Debug.Log(renderedSeries);
-        //if (renderedSeries == null && parent.Find(GameObjectSeriesName) == null)
-        //{
-        //    var piechartSeries = Resources.Load<GameObject>("Charts/Series/PiechartSeries");
-        //    var instantiatedObject = Object.Instantiate(piechartSeries, parent);
-        //    renderedSeries = ObjectIterator.GetChildByNameAndLayer(instantiatedObject.name, 5, parent);
-        //    renderedSeries.name = GameObjectSeriesName;
-        //}
-        //Debug.Log(renderedSeries);
-        //if (renderedSeries != null && renderedSeries.name != GameObjectSeriesName)
-        //{
-        //    renderedSeries.name = GameObjectSeriesName;
-        //}
-
-        //if(renderedSeries != null)
-        //{
-        //    var mask = ObjectIterator.GetChildByNameAndLayer(NAME_ENTRY_MASK, 5, renderedSeries.transform);
-        //    var slice = ObjectIterator.GetChildByNameAndLayer(NAME_ENTRY_SLICE, 5, renderedSeries.transform);
-        //}
     }
 
     protected override string OnKeyChanged(SeriesValue seriesValue, string oldValue)

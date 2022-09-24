@@ -1,12 +1,16 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
 [ExecuteAlways]
 public class Chart : MonoBehaviour
 {
+    private bool Mounted = false;
+
+    private RenderTexture RenderTexture;
+    private Camera RenderCamera;
+    private Material RenderMaterial;
+
     private VisualizationTypeEnum _VisualizationType = VisualizationTypeEnum.Piechart;
     public VisualizationTypeEnum VisualizationType
     {
@@ -97,65 +101,13 @@ public class Chart : MonoBehaviour
         }
     }
 
-    //public List<Series> Series;
-
-
-    //public ChartProperties Properties;
-    //private ChartProperties PreviousState;
-
-    //private ChartDrawer ChartDrawer;
-
-    //private void SetPreviousState() 
-    //{
-    //    if(Properties != null)
-    //    {
-    //        PreviousState = new ChartProperties
-    //        {
-    //            Title = Properties.Title,
-    //            VisualizationType = Properties.VisualizationType,
-    //            UnitSymbol = Properties.UnitSymbol,
-    //            UnitPosition = Properties.UnitPosition,
-    //            ShowUnit = Properties.ShowUnit,
-    //            Series = new List<Series>()
-    //        };
-
-    //        PreviousState.Series.AddRange(Properties.Series);
-    //    }
-    //}
-
-    //private ChartDrawer NewChartDrawer()
-    //{
-    //    switch (Properties.VisualizationType)
-    //    {
-    //        case VisualizationTypeEnum.Piechart:
-    //            return new PiechartDrawer(Properties, PreviousState);
-    //        case VisualizationTypeEnum.StackedBarChart:
-    //            throw new System.NotImplementedException();
-    //        default:
-    //            return null;
-    //    }
-    //}
-
     protected void OnValidate()
     {
         NumberOfSeries = NumberOfSeries > 0 ? NumberOfSeries : 0;
     }
 
-    private void Start()
-    {
-        //Debug.Log("HERE Starting Chart!!");
-        //SetPreviousState();
-
-        //ChartDrawer = NewChartDrawer();
-    }
-
     protected void OnVisualizationTypeChanged(VisualizationTypeEnum oldValue)
     {
-        //Debug.Log("Changed VisualizationType from ");
-        //Debug.Log(oldValue);
-        //Debug.Log(" TO ");
-        //Debug.Log(VisualizationType);
-
         RemoveSeriesWithOtherTypes();
     }
 
@@ -203,6 +155,17 @@ public class Chart : MonoBehaviour
         }
     }
 
+    //foreach (var series in existingSeries)
+    //{
+    //    Debug.Log("series.Name");
+    //    Debug.Log(series.name.Replace("Series_", string.Empty));
+    //    Debug.Log("series.Entries");
+    //    foreach (Transform entry in ObjectIterator.GetChildByNameAndLayer("Entries", 5, series.transform)?.transform)
+    //    {
+    //        Debug.Log($"{entry.name.Replace($"{series.name}_", string.Empty)}: {ObjectIterator.GetChildByNameAndLayer("Label", 5, entry)?.GetComponentInChildren<TMP_Text>().text.Replace("%", string.Empty)}");
+    //    }
+    //}
+
     private void FlushSeriesComponents()
     {
         if (VisualizationType == VisualizationTypeEnum.Piechart)
@@ -216,8 +179,6 @@ public class Chart : MonoBehaviour
 
                 for (var i = seriesCount; i < NumberOfSeries; i++)
                 {
-                    Debug.Log("Adding series");
-                    Debug.Log($"Series_{i + 1}");
                     PiechartSeries[i] = gameObject.AddComponent<PiechartSeries>();
                     PiechartSeries[i].Init($"Series_{i + 1}");
                     PiechartSeries[i].Render(ObjectIterator.GetChildByNameAndLayer("Canvas", 5, transform)?.transform);
@@ -235,30 +196,72 @@ public class Chart : MonoBehaviour
         }
     }
 
+    private void SetupRenderer(Transform parentTransform)
+    {
+        int initialImageRendererPosition = 0;
+        foreach(var arObject in GameObject.FindGameObjectsWithTag("ARObject"))
+        {
+            var imageRenderer = ObjectIterator.GetChildByNameAndLayer("ImageRenderer", 5, arObject.transform);
+
+            if(imageRenderer)
+            {
+                imageRenderer.transform.localPosition = new Vector3
+                (
+                    imageRenderer.transform.localPosition.x,
+                    imageRenderer.transform.localPosition.y,
+                    initialImageRendererPosition += 100
+                );
+            }
+        }
+
+        if (RenderTexture == null)
+        {
+            RenderTexture = new RenderTexture(400, 455, 16, RenderTextureFormat.ARGB32);
+            RenderTexture.depth = 24;
+
+            var createdWithSuccess = RenderTexture.Create();
+
+            if (!createdWithSuccess)
+                RenderTexture = null;
+        }
+
+        if (RenderCamera == null)
+            RenderCamera = ObjectIterator.GetChildByNameAndLayer("Camera", 5, parentTransform)?.GetComponent<Camera>();
+
+        if (RenderCamera != null && RenderCamera.targetTexture == null)
+            RenderCamera.targetTexture = RenderTexture;
+
+        if (RenderMaterial == null && RenderCamera?.targetTexture != null)
+        {
+            RenderMaterial = new Material(Shader.Find("Unlit/Transparent"));
+            RenderMaterial.SetTexture("_MainTex", RenderCamera.targetTexture);
+        }
+
+        var mesh = ObjectIterator.GetChildByNameAndLayer("RenderedSurface", 0, parentTransform)?.GetComponent<MeshRenderer>();
+
+        if (RenderMaterial != null)
+            mesh.sharedMaterial = RenderMaterial;
+
+
+        if (mesh?.sharedMaterials != null && mesh?.sharedMaterials?.Length > 1)
+        {
+            mesh.sharedMaterials = new Material[] { RenderMaterial };
+        }
+    }
+
+    private void Start()
+    {
+        Mounted = false;
+    }
+
     void Update()
     {
+        if(!Mounted)
+        {
+            SetupRenderer(transform);
+            Mounted = true;
+        }
+
         FlushSeriesComponents();
-        //    Debug.Log("On update Chart Drawer");
-        //    Debug.Log(ChartDrawer);
-
-        //    if (ChartDrawer == null)
-        //        ChartDrawer = NewChartDrawer();
-
-        //    ChartDrawer.UpdateSeries();
-
-        //    //if(Properties != null && PreviousState != null)
-        //    //    PiechartDrawer.SetStates(Properties, PreviousState);
-
-        //    ChartDrawer.ListenToPropsChange(transform);
-
-        //    //switch (VisualizationType)
-        //    //{
-        //    //    case VisualizationTypeEnum.Piechart:
-
-        //    //    default:
-        //    //        return;
-        //    //}
-
-        //    SetPreviousState();
     }
 }

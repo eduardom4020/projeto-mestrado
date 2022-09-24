@@ -28,7 +28,7 @@ public class PiechartSeriesBuilder : MonoBehaviour
     public void Init(PiechartSeries PiechartSeries)
     {
         Name = PiechartSeries.Name;
-        Entries = PiechartSeries.Entries.Select(x => new SeriesValueBuilder(x.Key, x.Value)).ToList();
+        Entries = PiechartSeries.Entries?.Select(x => new SeriesValueBuilder(x.Key, x.Value))?.ToList() ?? new List<SeriesValueBuilder>();
 
         this.PiechartSeries = PiechartSeries;
     }
@@ -39,33 +39,7 @@ public class PiechartSeriesBuilder : MonoBehaviour
         if (PiechartSeries != null)
         {
             PiechartSeries.Name = Name;
-
-            if(Entries.Count >= PiechartSeries.Entries?.Count)
-            {
-                var updatedEntries = Entries
-                .Take(PiechartSeries.Entries.Count)
-                .ToList();
-
-                for (int i = 0; i < updatedEntries.Count; i++)
-                {
-                    PiechartSeries.Entries[i].Key = updatedEntries[i].Key;
-                    PiechartSeries.Entries[i].Value = updatedEntries[i].Value;
-                }
-
-                var newEntries = Entries
-                    .Skip(PiechartSeries.Entries.Count)
-                    .Select(x => new SeriesValue { Key = x.Key, Value = x.Value })
-                    .ToList();
-
-                if(newEntries.Count > 0)
-                {
-                    PiechartSeries.AddEntries(newEntries);
-                }
-            }
-            else
-            {
-                PiechartSeries.RemoveEntries(Entries.Count, PiechartSeries.Entries.Count - Entries.Count);
-            }
+            PiechartSeries.Entries = Entries.Select(x => new SeriesValue { Key = x.Key, Value = x.Value }).ToList();
 
             var entryKeyChanged = PiechartSeries.Entries.Where((x, index) => x.Key != Entries[index].Key).Count() > 0;
 
