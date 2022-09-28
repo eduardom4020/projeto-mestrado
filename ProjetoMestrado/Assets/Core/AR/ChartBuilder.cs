@@ -1,6 +1,4 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -36,36 +34,57 @@ public class ChartBuilder : MonoBehaviour
             DestroyImmediate(PiechartSeriesBuilder[i]);
             Array.Resize(ref PiechartSeriesBuilder, i);
         }
+
+        var BarchartSeriesBuilder = GetComponents<BarchartSeriesBuilder>();
+        for (var i = BarchartSeriesBuilder.Length - 1; i >= 0; i--)
+        {
+            DestroyImmediate(BarchartSeriesBuilder[i]);
+            Array.Resize(ref BarchartSeriesBuilder, i);
+        }
     }
 
     private void AddSeriesBuildersComponents()
     {
-        if(VisualizationType == VisualizationTypeEnum.Piechart)
+        switch (VisualizationType)
         {
-            var PiechartSeries = GetComponents<PiechartSeries>();
-            foreach(var piechartSeries in PiechartSeries)
-            {
-                var piechartBuilder = gameObject.AddComponent<PiechartSeriesBuilder>();
-                piechartBuilder.Init(piechartSeries);
-            }
+            case VisualizationTypeEnum.Piechart:
+                var PiechartSeries = GetComponents<PiechartSeries>();
+                foreach (var piechartSeries in PiechartSeries)
+                {
+                    var piechartBuilder = gameObject.AddComponent<PiechartSeriesBuilder>();
+                    piechartBuilder.Init(piechartSeries);
+                }
+
+                break;
+            case VisualizationTypeEnum.StackedBarChart:
+                var BarchartSeries = GetComponents<BarchartSeries>();
+                foreach (var barchartSeries in BarchartSeries)
+                {
+                    var barchartBuilder = gameObject.AddComponent<BarchartSeriesBuilder>();
+                    barchartBuilder.Init(barchartSeries);
+                }
+
+                break;
+            default:
+                break;
         }
     }
 
-    private void FlushSeriesBuildersComponents()
-    {
-        if (VisualizationType == VisualizationTypeEnum.Piechart)
-        {
-            var PiechartSeries = GetComponents<PiechartSeries>();
-            var PiechartSeriesBuilders = GetComponents<PiechartSeriesBuilder>();
+    //private void FlushSeriesBuildersComponents()
+    //{
+    //    if (VisualizationType == VisualizationTypeEnum.Piechart)
+    //    {
+    //        var PiechartSeries = GetComponents<PiechartSeries>();
+    //        var PiechartSeriesBuilders = GetComponents<PiechartSeriesBuilder>();
             
-            for (int i = 0; i < PiechartSeries.Length; i++)
-            {
-                PiechartSeriesBuilders[i].PiechartSeries = PiechartSeries[i];
-                PiechartSeriesBuilders[i].Name = PiechartSeries[i].Name;
-                PiechartSeriesBuilders[i].Entries = PiechartSeries[i].Entries.Select(x => new SeriesValueBuilder(x.Key, x.Value)).ToList();
-            }
-        }
-    }
+    //        for (int i = 0; i < PiechartSeries.Length; i++)
+    //        {
+    //            PiechartSeriesBuilders[i].PiechartSeries = PiechartSeries[i];
+    //            PiechartSeriesBuilders[i].Name = PiechartSeries[i].Name;
+    //            PiechartSeriesBuilders[i].Entries = PiechartSeries[i].Entries.Select(x => new SeriesValueBuilder(x.Key, x.Value)).ToList();
+    //        }
+    //    }
+    //}
 
     private void OnValidate()
     {
@@ -84,7 +103,6 @@ public class ChartBuilder : MonoBehaviour
         if(Chart == null)
         {
             SetChart();
-            //FlushSeriesBuildersComponents();
         }
 
         var numberOfSeriesChanged = Chart.NumberOfSeries != NumberOfSeries;

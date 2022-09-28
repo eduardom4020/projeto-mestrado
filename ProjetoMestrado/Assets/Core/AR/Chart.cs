@@ -153,6 +153,16 @@ public class Chart : MonoBehaviour
                 Array.Resize(ref PiechartSeries, i);
             }
         }
+
+        if (VisualizationType != VisualizationTypeEnum.StackedBarChart)
+        {
+            var BarchartSeries = GetComponents<BarchartSeries>();
+            for (var i = BarchartSeries.Length - 1; i >= 0; i--)
+            {
+                DestroyImmediate(BarchartSeries[i]);
+                Array.Resize(ref BarchartSeries, i);
+            }
+        }
     }
 
     //foreach (var series in existingSeries)
@@ -168,31 +178,63 @@ public class Chart : MonoBehaviour
 
     private void FlushSeriesComponents()
     {
-        if (VisualizationType == VisualizationTypeEnum.Piechart)
+        int seriesCount = 0;
+        switch (VisualizationType)
         {
-            var PiechartSeries = GetComponents<PiechartSeries>();
-            var seriesCount = PiechartSeries.Length;
+            case VisualizationTypeEnum.Piechart:
+                var PiechartSeries = GetComponents<PiechartSeries>();
+                seriesCount = PiechartSeries.Length;
 
-            if (PiechartSeries == null || (NumberOfSeries > seriesCount))
-            {
-                PiechartSeries = new PiechartSeries[NumberOfSeries];
+                if (PiechartSeries == null || (NumberOfSeries > seriesCount))
+                {
+                    PiechartSeries = new PiechartSeries[NumberOfSeries];
 
-                for (var i = seriesCount; i < NumberOfSeries; i++)
-                {
-                    PiechartSeries[i] = gameObject.AddComponent<PiechartSeries>();
-                    PiechartSeries[i].Init($"Series_{i + 1}");
-                    PiechartSeries[i].Render(ObjectIterator.GetChildByNameAndLayer("Canvas", 5, transform)?.transform);
+                    for (var i = seriesCount; i < NumberOfSeries; i++)
+                    {
+                        PiechartSeries[i] = gameObject.AddComponent<PiechartSeries>();
+                        PiechartSeries[i].Init($"Series_{i + 1}");
+                        PiechartSeries[i].Render(ObjectIterator.GetChildByNameAndLayer("Canvas", 5, transform)?.transform);
+                    }
                 }
-            }
-            else if(NumberOfSeries < seriesCount)
-            {
-                for (var i = seriesCount - 1; i >= NumberOfSeries; i--)
+                else if (NumberOfSeries < seriesCount)
                 {
-                    PiechartSeries[i].Destroy(ObjectIterator.GetChildByNameAndLayer("Canvas", 5, transform)?.transform);
-                    DestroyImmediate(PiechartSeries[i]);
-                    Array.Resize(ref PiechartSeries, i);
+                    for (var i = seriesCount - 1; i >= NumberOfSeries; i--)
+                    {
+                        PiechartSeries[i].Destroy(ObjectIterator.GetChildByNameAndLayer("Canvas", 5, transform)?.transform);
+                        DestroyImmediate(PiechartSeries[i]);
+                        Array.Resize(ref PiechartSeries, i);
+                    }
                 }
-            }
+
+                break;
+            case VisualizationTypeEnum.StackedBarChart:
+                var BarchartSeries = GetComponents<BarchartSeries>();
+                seriesCount = BarchartSeries.Length;
+
+                if (BarchartSeries == null || (NumberOfSeries > seriesCount))
+                {
+                    BarchartSeries = new BarchartSeries[NumberOfSeries];
+
+                    for (var i = seriesCount; i < NumberOfSeries; i++)
+                    {
+                        BarchartSeries[i] = gameObject.AddComponent<BarchartSeries>();
+                        BarchartSeries[i].Init($"Series_{i + 1}");
+                        BarchartSeries[i].Render(ObjectIterator.GetChildByNameAndLayer("Canvas", 5, transform)?.transform);
+                    }
+                }
+                else if (NumberOfSeries < seriesCount)
+                {
+                    for (var i = seriesCount - 1; i >= NumberOfSeries; i--)
+                    {
+                        BarchartSeries[i].Destroy(ObjectIterator.GetChildByNameAndLayer("Canvas", 5, transform)?.transform);
+                        DestroyImmediate(BarchartSeries[i]);
+                        Array.Resize(ref BarchartSeries, i);
+                    }
+                }
+
+                break;
+            default:
+                break;
         }
     }
 
@@ -216,7 +258,10 @@ public class Chart : MonoBehaviour
 
         if (RenderTexture == null)
         {
-            RenderTexture = new RenderTexture(400, 455, 16, RenderTextureFormat.ARGB32);
+            var ImageRenderer = ObjectIterator.GetChildByNameAndLayer("ImageRenderer", 5, parentTransform);
+            var BgRectTransform = ObjectIterator.GetChildByNameAndLayer("Bg", 5, ImageRenderer.transform)?.GetComponent<RectTransform>();
+
+            RenderTexture = new RenderTexture((int) BgRectTransform.rect.width, (int)BgRectTransform.rect.height, 16, RenderTextureFormat.ARGB32);
             RenderTexture.depth = 24;
 
             var createdWithSuccess = RenderTexture.Create();

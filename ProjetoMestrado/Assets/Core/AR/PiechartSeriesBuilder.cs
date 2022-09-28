@@ -33,7 +33,6 @@ public class PiechartSeriesBuilder : MonoBehaviour
         this.PiechartSeries = PiechartSeries;
     }
 
-    // Update is called once per frame
     void Update()
     {
         if (PiechartSeries != null)
