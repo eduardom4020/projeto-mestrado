@@ -93,6 +93,8 @@ public class SeriesValue
 
 public abstract class Series : MonoBehaviour
 {
+    public int? SeriesIndex { get; set; } = null;
+
     public static bool operator ==(Series seriesA, Series seriesB)
     {
         if (seriesA is null && seriesB is null)

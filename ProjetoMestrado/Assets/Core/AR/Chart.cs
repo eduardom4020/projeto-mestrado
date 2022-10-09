@@ -206,6 +206,11 @@ public class Chart : MonoBehaviour
                     }
                 }
 
+                for(var i = 0; i < PiechartSeries.Length; i++)
+                {
+                    PiechartSeries[i].SeriesIndex = i;
+                }
+
                 break;
             case VisualizationTypeEnum.StackedBarChart:
                 var BarchartSeries = GetComponents<BarchartSeries>();
@@ -229,6 +234,15 @@ public class Chart : MonoBehaviour
                         BarchartSeries[i].Destroy(ObjectIterator.GetChildByNameAndLayer("Canvas", 5, transform)?.transform);
                         DestroyImmediate(BarchartSeries[i]);
                         Array.Resize(ref BarchartSeries, i);
+                    }
+                }
+
+                for (var i = 0; i < BarchartSeries.Length; i++)
+                {
+                    if(BarchartSeries[i] != null)
+                    {
+                        BarchartSeries[i].SeriesIndex = i;
+                        BarchartSeries[i].FlushBars();
                     }
                 }
 
