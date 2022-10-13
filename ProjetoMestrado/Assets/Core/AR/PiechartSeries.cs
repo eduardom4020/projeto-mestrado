@@ -1,157 +1,165 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using TMPro;
-using UnityEngine;
-using UnityEngine.UI;
+//using System;
+//using System.Collections;
+//using System.Collections.Generic;
+//using System.Linq;
+//using TMPro;
+//using UnityEngine;
+//using UnityEngine.UI;
 
-public class PiechartSeries : Series
-{
-    protected string NAME_ENTRY_MASK = "EntryMask";
-    protected string NAME_ENTRY_SLICE = "EntrySlice";
+//public class PiechartSeries : Series
+//{
+//    protected string NAME_ENTRY_MASK = "EntryMask";
+//    protected string NAME_ENTRY_SLICE = "EntrySlice";
 
-    protected List<Color32> Colors = new List<Color32>();
+//    protected List<Color32> Colors = new List<Color32>();
 
-    public PiechartSeries(string Name, List<SeriesValue> Entries) : base(Name, Entries)
-    {
-    }
+//    public PiechartSeries(string Name, List<SeriesValue> Entries) : base(Name, Entries)
+//    {
+//    }
 
-    public PiechartSeries(string Name) : base(Name)
-    {
-    }
+//    public PiechartSeries(string Name) : base(Name)
+//    {
+//    }
 
-    public override void Render(Transform parent)
-    {
-        Debug.Log("Rendered series");
+//    public override void Render(Transform parent)
+//    {
+//        Debug.Log("Rendered series");
 
-        var piechartSeries = Resources.Load<GameObject>("Charts/Series/PiechartSeries/PiechartSeries");
-        var instantiatedSeries = Instantiate(piechartSeries, parent);
-        instantiatedSeries.name = GameObjectSeriesName;
+//        var piechartSeries = Resources.Load<GameObject>("Charts/Series/PiechartSeries/PiechartSeries");
+//        var instantiatedSeries = Instantiate(piechartSeries, parent);
+//        instantiatedSeries.name = GameObjectSeriesName;
 
-        Colors = new List<Color32>
-        {
-            new Color32(49, 86, 230, 255),
-            new Color32(255, 61, 253, 255),
-            new Color32(24, 66, 137, 255),
-            new Color32(165, 64, 217, 255)
-        };
-    }
+//        Colors = new List<Color32>
+//        {
+//            new Color32(49, 86, 230, 255),
+//            new Color32(255, 61, 253, 255),
+//            new Color32(24, 66, 137, 255),
+//            new Color32(165, 64, 217, 255)
+//        };
+//    }
 
-    protected override string OnKeyChanged(SeriesValue seriesValue, string oldValue)
-    {
-        Debug.Log("On key changed!");
-        var entriesGameObject = GetEntriesGameObject();
+//    protected override string OnKeyChanged(SeriesValue seriesValue, string oldValue)
+//    {
+//        Debug.Log("On key changed!");
+//        var entriesGameObject = GetEntriesGameObject();
 
-        if (entriesGameObject == null)
-        {
-            return null;
-        }
+//        if (entriesGameObject == null)
+//        {
+//            return null;
+//        }
 
-        var entryGameObject = ObjectIterator.GetChildByNameAndLayer($"{GameObjectSeriesName}_{oldValue}", 5, entriesGameObject.transform);
+//        var entryGameObject = ObjectIterator.GetChildByNameAndLayer($"{GameObjectSeriesName}_{oldValue}", 5, entriesGameObject.transform);
 
-        if (entryGameObject != null)
-        {
-            entryGameObject.name = $"{GameObjectSeriesName}_{seriesValue.Key}";
-            //entryGameObject.gameObject.GetComponentInChildren<TMP_Text>().SetText(Title);
-        }
+//        if (entryGameObject != null)
+//        {
+//            entryGameObject.name = $"{GameObjectSeriesName}_{seriesValue.Key}";
+//            //entryGameObject.gameObject.GetComponentInChildren<TMP_Text>().SetText(Title);
+//        }
 
-        return null;
-    }
+//        return null;
+//    }
 
-    protected override string OnValueChanged(SeriesValue seriesValue, float oldValue)
-    {
-        Debug.Log("On value changed!");
-        var entriesGameObject = GetEntriesGameObject();
+//    protected override string OnValueChanged(SeriesValue seriesValue, float oldValue)
+//    {
+//        Debug.Log("On value changed!");
+//        var entriesGameObject = GetEntriesGameObject();
 
-        if (entriesGameObject == null)
-        {
-            return null;
-        }
+//        if (entriesGameObject == null)
+//        {
+//            return null;
+//        }
 
-        var entryGameObject = ObjectIterator.GetChildByNameAndLayer($"{GameObjectSeriesName}_{seriesValue.Key}", 5, entriesGameObject.transform);
+//        var entryGameObject = ObjectIterator.GetChildByNameAndLayer($"{GameObjectSeriesName}_{seriesValue.Key}", 5, entriesGameObject.transform);
 
-        if (entryGameObject != null)
-        {
-            var entryIndex = Entries.FindIndex(x => x.Key == seriesValue.Key);
+//        if (entryGameObject != null)
+//        {
+//            var entryIndex = Entries.FindIndex(x => x.Key == seriesValue.Key);
 
-            if (entryIndex < 0) return null;
+//            if (entryIndex < 0) return null;
 
-            var entryMask = ObjectIterator.GetChildByNameAndLayer("EntryMask", 5, entryGameObject.transform);
-            var entrySlice = ObjectIterator.GetChildByNameAndLayer("EntrySlice", 5, entryGameObject.transform);
-            var label = ObjectIterator.GetChildByNameAndLayer("Label", 5, entryGameObject.transform);
+//            var entryMask = ObjectIterator.GetChildByNameAndLayer("EntryMask", 5, entryGameObject.transform);
+//            var entrySlice = ObjectIterator.GetChildByNameAndLayer("EntrySlice", 5, entryGameObject.transform);
+//            var label = ObjectIterator.GetChildByNameAndLayer("Label", 5, entryGameObject.transform);
 
-            if(entryMask == null && entrySlice == null && label == null) return null;
+//            if(entryMask == null && entrySlice == null && label == null) return null;
 
-            var seriesAccValue = Entries.Take(entryIndex).Select(x => x.Value).Sum() / 100;
+//            var seriesAccValue = Entries.Take(entryIndex).Select(x => x.Value).Sum() / 100;
 
-            var maskValue = 1 - seriesAccValue;
-            var sliceValue = seriesAccValue + (seriesValue.Value / 100);
+//            var maskValue = 1 - seriesAccValue;
+//            var sliceValue = seriesAccValue + (seriesValue.Value / 100);
 
-            var seriesAccDeg = (seriesAccValue + (seriesValue.Value * 0.5 / 100)) * 360 * 0.01745;
+//            var seriesAccDeg = (seriesAccValue + (seriesValue.Value * 0.5 / 100)) * 360 * 0.01745;
 
-            entryMask.GetComponent<Image>().fillAmount = maskValue;
-            entrySlice.GetComponent<Image>().fillAmount = sliceValue;
+//            entryMask.GetComponent<Image>().fillAmount = maskValue;
+//            entrySlice.GetComponent<Image>().fillAmount = sliceValue;
 
-            if(seriesValue.Value > 0)
-            {
-                label.GetComponent<RectTransform>().localPosition = new Vector3
-                (
-                    (float)Math.Sin(seriesAccDeg) * 80 * -1,
-                    (float)Math.Cos(seriesAccDeg) * 80,
-                    0
-                );
-                label.GetComponent<TMP_Text>().SetText($"{seriesValue.Value}%");
-            }
-            else
-            {
-                label.GetComponent<RectTransform>().localPosition = Vector3.zero;
-                label.GetComponent<TMP_Text>().SetText(string.Empty);
-            }
+//            if(seriesValue.Value > 0)
+//            {
+//                label.GetComponent<RectTransform>().localPosition = new Vector3
+//                (
+//                    (float)Math.Sin(seriesAccDeg) * 80 * -1,
+//                    (float)Math.Cos(seriesAccDeg) * 80,
+//                    0
+//                );
+//                label.GetComponent<TMP_Text>().SetText($"{seriesValue.Value}%");
+//            }
+//            else
+//            {
+//                label.GetComponent<RectTransform>().localPosition = Vector3.zero;
+//                label.GetComponent<TMP_Text>().SetText(string.Empty);
+//            }
             
-        }
+//        }
 
-        return null;
+//        return null;
 
-    }
+//    }
 
-    public override void RenderEntry(SeriesValue Entry, Transform parent)
-    {
-        Debug.Log("Rendered entry");
+//    public override void RenderEntry(SeriesValue Entry, Transform parent)
+//    {
+//        Debug.Log("Rendered entry");
 
-        var piechartEntry = Resources.Load<GameObject>("Charts/Series/PiechartSeries/Entry");
-        var instantiatedEntry = Instantiate(piechartEntry, parent);
-        instantiatedEntry.name = $"{GameObjectSeriesName}_{Entry.Key}";
+//        var piechartEntry = Resources.Load<GameObject>("Charts/Series/PiechartSeries/Entry");
+//        var instantiatedEntry = Instantiate(piechartEntry, parent);
+//        instantiatedEntry.name = $"{GameObjectSeriesName}_{Entry.Key}";
 
-        if(Entries?.Count <= Colors.Count)
-        {
-            var entrySlice = ObjectIterator.GetChildByNameAndLayer("EntrySlice", 5, instantiatedEntry.transform);
-            entrySlice.GetComponent<Image>().color = Colors[Entries.Count - 1];
-        }
+//        if(Entries?.Count <= Colors.Count)
+//        {
+//            var entrySlice = ObjectIterator.GetChildByNameAndLayer("EntrySlice", 5, instantiatedEntry.transform);
+//            entrySlice.GetComponent<Image>().color = Colors[Entries.Count - 1];
+//        }
 
-        Entry.Key = $"Entry_{Entries.Count}";
-        Entry.Value = 0;
+//        //Entry.Key = $"Entry_{Entries.Count}";
+//        //Entry.Value = 0;
 
-        OnKeyChanged(Entry, string.Empty);
-        OnValueChanged(Entry, 0);
-    }
+//        OnKeyChanged(Entry, string.Empty);
+//        OnValueChanged(Entry, 0);
+//    }
 
-    protected override void OnEntriesChanged(List<SeriesValue> oldValue)
-    {
-        var entriesGameObject = GetEntriesGameObject();
+//    protected override void OnEntriesChanged(List<SeriesValue> oldValue)
+//    {
+//        var entriesGameObject = GetEntriesGameObject();
 
-        if(entriesGameObject == null)
-        {
-            return;
-        }
+//        if(entriesGameObject == null)
+//        {
+//            return;
+//        }
 
-        base.OnEntriesChanged(oldValue);
+//        base.OnEntriesChanged(oldValue);
 
-        var newEntries = Entries.Skip(oldValue.Count);
+//        var newEntries = Entries.Skip(oldValue.Count);
 
-        foreach (var entry in newEntries)
-        {
-            RenderEntry(entry, entriesGameObject.transform);
-        }
-    }
-}
+//        Debug.Log("OnEntriesChanged");
+//        Debug.Log("Old value:");
+//        Debug.Log(string.Join("\n", oldValue.Select(x => $"{x.Key}: {x.Value}")));
+//        Debug.Log("New value:");
+//        Debug.Log(string.Join("\n", Entries.Select(x => $"{x.Key}: {x.Value}")));
+//        Debug.Log("Value to render:");
+//        Debug.Log(string.Join("\n", newEntries.Select(x => $"{x.Key}: {x.Value}")));
+
+//        foreach (var entry in newEntries)
+//        {
+//            RenderEntry(entry, entriesGameObject.transform);
+//        }
+//    }
+//}

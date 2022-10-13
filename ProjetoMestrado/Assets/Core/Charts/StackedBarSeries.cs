@@ -6,7 +6,7 @@
 //using UnityEngine;
 //using UnityEngine.UI;
 
-//public class BarchartSeries : Series
+//public class StackedBarSeries : Series
 //{
 //    public float SeriesMaxValue { get; protected set; } = 0.0f;
 
@@ -262,7 +262,7 @@
 
 //        PlaceBar(EntryIndex, instantiatedEntry, barMask);
 
-//        if(SeriesIndex != null)
+//        if (SeriesIndex != null)
 //        {
 //            var bar = ObjectIterator.GetChildByNameAndLayer("Bar", 5, barMask.transform);
 //            bar.GetComponent<Image>().color = Colors[SeriesIndex.Value];
@@ -279,7 +279,7 @@
 //    {
 //        var entriesGameObject = GetEntriesGameObject();
 
-//        if(entriesGameObject == null)
+//        if (entriesGameObject == null)
 //        {
 //            return;
 //        }

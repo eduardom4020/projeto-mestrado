@@ -1,0 +1,25 @@
+{
+  "VisualizationType": "Piechart",
+  "NumberOfSeries": 1,
+  "Title": "Test Piechart",
+
+  "Series": [
+    {
+      "Name": "Test",
+      "Entries": [
+        {
+          "Key": "Entry_1",
+          "Value": 25.0
+        },
+        {
+          "Key": "Entry_2",
+          "Value": 25.0
+        },
+        {
+          "Key": "Entry_3",
+          "Value": 50.0
+        }
+      ]
+    }
+  ]
+}

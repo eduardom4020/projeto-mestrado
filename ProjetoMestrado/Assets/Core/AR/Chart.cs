@@ -1,326 +1,326 @@
-using System;
-using TMPro;
-using UnityEngine;
+//using System;
+//using TMPro;
+//using UnityEngine;
 
-[ExecuteAlways]
-public class Chart : MonoBehaviour
-{
-    private bool Mounted = false;
+//[ExecuteAlways]
+//public class Chart : MonoBehaviour
+//{
+//    private bool Mounted = false;
 
-    private RenderTexture RenderTexture;
-    private Camera RenderCamera;
-    private Material RenderMaterial;
+//    private RenderTexture RenderTexture;
+//    private Camera RenderCamera;
+//    private Material RenderMaterial;
 
-    private VisualizationTypeEnum _VisualizationType = VisualizationTypeEnum.Piechart;
-    public VisualizationTypeEnum VisualizationType
-    {
-        get { return _VisualizationType; }
-        set
-        {
-            if (_VisualizationType == value) return;
+//    private VisualizationTypeEnum _VisualizationType = VisualizationTypeEnum.Piechart;
+//    public VisualizationTypeEnum VisualizationType
+//    {
+//        get { return _VisualizationType; }
+//        set
+//        {
+//            if (_VisualizationType == value) return;
 
-            var oldVaue = _VisualizationType;
-            _VisualizationType = value;
+//            var oldVaue = _VisualizationType;
+//            _VisualizationType = value;
 
-            OnVisualizationTypeChanged(oldVaue);
-        }
-    }
+//            OnVisualizationTypeChanged(oldVaue);
+//        }
+//    }
 
-    private int _NumberOfSeries = 0;
-    public int NumberOfSeries
-    {
-        get { return _NumberOfSeries; }
-        set
-        {
-            if (_NumberOfSeries == value) return;
+//    private int _NumberOfSeries = 0;
+//    public int NumberOfSeries
+//    {
+//        get { return _NumberOfSeries; }
+//        set
+//        {
+//            if (_NumberOfSeries == value) return;
 
-            var oldVaue = _NumberOfSeries;
-            _NumberOfSeries = value;
+//            var oldVaue = _NumberOfSeries;
+//            _NumberOfSeries = value;
 
-            OnNumberOfSeriesChanged(oldVaue);
-        }
-    }
+//            OnNumberOfSeriesChanged(oldVaue);
+//        }
+//    }
 
-    private string _Title;
-    public string Title
-    {
-        get { return _Title; }
-        set
-        {
-            if (_Title == value) return;
+//    private string _Title;
+//    public string Title
+//    {
+//        get { return _Title; }
+//        set
+//        {
+//            if (_Title == value) return;
 
-            var oldVaue = _Title;
-            _Title = value;
+//            var oldVaue = _Title;
+//            _Title = value;
 
-            OnTitleChanged(oldVaue);
-        }
-    }
+//            OnTitleChanged(oldVaue);
+//        }
+//    }
 
-    private string _UnitSymbol;
-    public string UnitSymbol
-    {
-        get { return _UnitSymbol; }
-        set
-        {
-            if (_UnitSymbol == value) return;
+//    private string _UnitSymbol;
+//    public string UnitSymbol
+//    {
+//        get { return _UnitSymbol; }
+//        set
+//        {
+//            if (_UnitSymbol == value) return;
 
-            var oldVaue = _UnitSymbol;
-            _UnitSymbol = value;
+//            var oldVaue = _UnitSymbol;
+//            _UnitSymbol = value;
 
-            OnUnitSymbolChanged(oldVaue);
-        }
-    }
+//            OnUnitSymbolChanged(oldVaue);
+//        }
+//    }
 
-    private UnitPositionEnum _UnitPosition;
-    public UnitPositionEnum UnitPosition
-    {
-        get { return _UnitPosition; }
-        set
-        {
-            if (_UnitPosition == value) return;
+//    private UnitPositionEnum _UnitPosition;
+//    public UnitPositionEnum UnitPosition
+//    {
+//        get { return _UnitPosition; }
+//        set
+//        {
+//            if (_UnitPosition == value) return;
 
-            var oldVaue = _UnitPosition;
-            _UnitPosition = value;
+//            var oldVaue = _UnitPosition;
+//            _UnitPosition = value;
 
-            OnUnitPositionChanged(oldVaue);
-        }
-    }
+//            OnUnitPositionChanged(oldVaue);
+//        }
+//    }
 
-    private bool _ShowUnit;
-    public bool ShowUnit
-    {
-        get { return _ShowUnit; }
-        set
-        {
-            if (_ShowUnit == value) return;
+//    private bool _ShowUnit;
+//    public bool ShowUnit
+//    {
+//        get { return _ShowUnit; }
+//        set
+//        {
+//            if (_ShowUnit == value) return;
 
-            var oldVaue = _ShowUnit;
-            _ShowUnit = value;
+//            var oldVaue = _ShowUnit;
+//            _ShowUnit = value;
 
-            OnShowUnitChanged(oldVaue);
-        }
-    }
+//            OnShowUnitChanged(oldVaue);
+//        }
+//    }
 
-    protected void OnValidate()
-    {
-        NumberOfSeries = NumberOfSeries > 0 ? NumberOfSeries : 0;
-    }
+//    protected void OnValidate()
+//    {
+//        NumberOfSeries = NumberOfSeries > 0 ? NumberOfSeries : 0;
+//    }
 
-    protected void OnVisualizationTypeChanged(VisualizationTypeEnum oldValue)
-    {
-        RemoveSeriesWithOtherTypes();
-    }
+//    protected void OnVisualizationTypeChanged(VisualizationTypeEnum oldValue)
+//    {
+//        RemoveSeriesWithOtherTypes();
+//    }
 
-    protected void OnNumberOfSeriesChanged(int oldValue)
-    {
-        RemoveSeriesWithOtherTypes();
-        FlushSeriesComponents();
-    }
+//    protected void OnNumberOfSeriesChanged(int oldValue)
+//    {
+//        RemoveSeriesWithOtherTypes();
+//        FlushSeriesComponents();
+//    }
 
-    protected void OnTitleChanged(string oldValue)
-    {
-        var titleComponent = ObjectIterator.GetChildByNameAndLayer("Title", 5, transform);
+//    protected void OnTitleChanged(string oldValue)
+//    {
+//        var titleComponent = ObjectIterator.GetChildByNameAndLayer("Title", 5, transform);
 
-        if (titleComponent != null)
-        {
-            titleComponent.gameObject.GetComponentInChildren<TMP_Text>().SetText(Title);
-        }
-    }
+//        if (titleComponent != null)
+//        {
+//            titleComponent.gameObject.GetComponentInChildren<TMP_Text>().SetText(Title);
+//        }
+//    }
 
-    protected void OnUnitSymbolChanged(string oldValue)
-    {
+//    protected void OnUnitSymbolChanged(string oldValue)
+//    {
 
-    }
+//    }
 
-    protected void OnUnitPositionChanged(UnitPositionEnum oldValue)
-    {
+//    protected void OnUnitPositionChanged(UnitPositionEnum oldValue)
+//    {
 
-    }
+//    }
 
-    protected void OnShowUnitChanged(bool oldValue)
-    {
+//    protected void OnShowUnitChanged(bool oldValue)
+//    {
 
-    }
+//    }
 
-    private void RemoveSeriesWithOtherTypes()
-    {
-        if (VisualizationType != VisualizationTypeEnum.Piechart)
-        {
-            var PiechartSeries = GetComponents<PiechartSeries>();
-            for (var i = PiechartSeries.Length - 1; i >= 0; i--)
-            {
-                DestroyImmediate(PiechartSeries[i]);
-                Array.Resize(ref PiechartSeries, i);
-            }
-        }
+//    private void RemoveSeriesWithOtherTypes()
+//    {
+//        if (VisualizationType != VisualizationTypeEnum.Piechart)
+//        {
+//            var PiechartSeries = GetComponents<PiechartSeries>();
+//            for (var i = PiechartSeries.Length - 1; i >= 0; i--)
+//            {
+//                DestroyImmediate(PiechartSeries[i]);
+//                Array.Resize(ref PiechartSeries, i);
+//            }
+//        }
 
-        if (VisualizationType != VisualizationTypeEnum.StackedBarChart)
-        {
-            var BarchartSeries = GetComponents<BarchartSeries>();
-            for (var i = BarchartSeries.Length - 1; i >= 0; i--)
-            {
-                DestroyImmediate(BarchartSeries[i]);
-                Array.Resize(ref BarchartSeries, i);
-            }
-        }
-    }
+//        if (VisualizationType != VisualizationTypeEnum.StackedBarChart)
+//        {
+//            var BarchartSeries = GetComponents<BarchartSeries>();
+//            for (var i = BarchartSeries.Length - 1; i >= 0; i--)
+//            {
+//                DestroyImmediate(BarchartSeries[i]);
+//                Array.Resize(ref BarchartSeries, i);
+//            }
+//        }
+//    }
 
-    //foreach (var series in existingSeries)
-    //{
-    //    Debug.Log("series.Name");
-    //    Debug.Log(series.name.Replace("Series_", string.Empty));
-    //    Debug.Log("series.Entries");
-    //    foreach (Transform entry in ObjectIterator.GetChildByNameAndLayer("Entries", 5, series.transform)?.transform)
-    //    {
-    //        Debug.Log($"{entry.name.Replace($"{series.name}_", string.Empty)}: {ObjectIterator.GetChildByNameAndLayer("Label", 5, entry)?.GetComponentInChildren<TMP_Text>().text.Replace("%", string.Empty)}");
-    //    }
-    //}
+//    //foreach (var series in existingSeries)
+//    //{
+//    //    Debug.Log("series.Name");
+//    //    Debug.Log(series.name.Replace("Series_", string.Empty));
+//    //    Debug.Log("series.Entries");
+//    //    foreach (Transform entry in ObjectIterator.GetChildByNameAndLayer("Entries", 5, series.transform)?.transform)
+//    //    {
+//    //        Debug.Log($"{entry.name.Replace($"{series.name}_", string.Empty)}: {ObjectIterator.GetChildByNameAndLayer("Label", 5, entry)?.GetComponentInChildren<TMP_Text>().text.Replace("%", string.Empty)}");
+//    //    }
+//    //}
 
-    private void FlushSeriesComponents()
-    {
-        int seriesCount = 0;
-        switch (VisualizationType)
-        {
-            case VisualizationTypeEnum.Piechart:
-                var PiechartSeries = GetComponents<PiechartSeries>();
-                seriesCount = PiechartSeries.Length;
+//    private void FlushSeriesComponents()
+//    {
+//        int seriesCount = 0;
+//        switch (VisualizationType)
+//        {
+//            case VisualizationTypeEnum.Piechart:
+//                var PiechartSeries = GetComponents<PiechartSeries>();
+//                seriesCount = PiechartSeries.Length;
 
-                if (PiechartSeries == null || (NumberOfSeries > seriesCount))
-                {
-                    PiechartSeries = new PiechartSeries[NumberOfSeries];
+//                if (PiechartSeries == null || (NumberOfSeries > seriesCount))
+//                {
+//                    PiechartSeries = new PiechartSeries[NumberOfSeries];
 
-                    for (var i = seriesCount; i < NumberOfSeries; i++)
-                    {
-                        PiechartSeries[i] = gameObject.AddComponent<PiechartSeries>();
-                        PiechartSeries[i].Init($"Series_{i + 1}");
-                        PiechartSeries[i].Render(ObjectIterator.GetChildByNameAndLayer("Canvas", 5, transform)?.transform);
-                    }
-                }
-                else if (NumberOfSeries < seriesCount)
-                {
-                    for (var i = seriesCount - 1; i >= NumberOfSeries; i--)
-                    {
-                        PiechartSeries[i].Destroy(ObjectIterator.GetChildByNameAndLayer("Canvas", 5, transform)?.transform);
-                        DestroyImmediate(PiechartSeries[i]);
-                        Array.Resize(ref PiechartSeries, i);
-                    }
-                }
+//                    for (var i = seriesCount; i < NumberOfSeries; i++)
+//                    {
+//                        PiechartSeries[i] = gameObject.AddComponent<PiechartSeries>();
+//                        PiechartSeries[i].Init($"Series_{i + 1}");
+//                        PiechartSeries[i].Render(ObjectIterator.GetChildByNameAndLayer("Canvas", 5, transform)?.transform);
+//                    }
+//                }
+//                else if (NumberOfSeries < seriesCount)
+//                {
+//                    for (var i = seriesCount - 1; i >= NumberOfSeries; i--)
+//                    {
+//                        PiechartSeries[i].Destroy(ObjectIterator.GetChildByNameAndLayer("Canvas", 5, transform)?.transform);
+//                        DestroyImmediate(PiechartSeries[i]);
+//                        Array.Resize(ref PiechartSeries, i);
+//                    }
+//                }
 
-                for(var i = 0; i < PiechartSeries.Length; i++)
-                {
-                    PiechartSeries[i].SeriesIndex = i;
-                }
+//                for(var i = 0; i < PiechartSeries.Length; i++)
+//                {
+//                    PiechartSeries[i].SeriesIndex = i;
+//                }
 
-                break;
-            case VisualizationTypeEnum.StackedBarChart:
-                var BarchartSeries = GetComponents<BarchartSeries>();
-                seriesCount = BarchartSeries.Length;
+//                break;
+//            case VisualizationTypeEnum.StackedBarChart:
+//                var BarchartSeries = GetComponents<BarchartSeries>();
+//                seriesCount = BarchartSeries.Length;
 
-                if (BarchartSeries == null || (NumberOfSeries > seriesCount))
-                {
-                    BarchartSeries = new BarchartSeries[NumberOfSeries];
+//                if (BarchartSeries == null || (NumberOfSeries > seriesCount))
+//                {
+//                    BarchartSeries = new BarchartSeries[NumberOfSeries];
 
-                    for (var i = seriesCount; i < NumberOfSeries; i++)
-                    {
-                        BarchartSeries[i] = gameObject.AddComponent<BarchartSeries>();
-                        BarchartSeries[i].Init($"Series_{i + 1}");
-                        BarchartSeries[i].Render(ObjectIterator.GetChildByNameAndLayer("Canvas", 5, transform)?.transform);
-                    }
-                }
-                else if (NumberOfSeries < seriesCount)
-                {
-                    for (var i = seriesCount - 1; i >= NumberOfSeries; i--)
-                    {
-                        BarchartSeries[i].Destroy(ObjectIterator.GetChildByNameAndLayer("Canvas", 5, transform)?.transform);
-                        DestroyImmediate(BarchartSeries[i]);
-                        Array.Resize(ref BarchartSeries, i);
-                    }
-                }
+//                    for (var i = seriesCount; i < NumberOfSeries; i++)
+//                    {
+//                        BarchartSeries[i] = gameObject.AddComponent<BarchartSeries>();
+//                        BarchartSeries[i].Init($"Series_{i + 1}");
+//                        BarchartSeries[i].Render(ObjectIterator.GetChildByNameAndLayer("Canvas", 5, transform)?.transform);
+//                    }
+//                }
+//                else if (NumberOfSeries < seriesCount)
+//                {
+//                    for (var i = seriesCount - 1; i >= NumberOfSeries; i--)
+//                    {
+//                        BarchartSeries[i].Destroy(ObjectIterator.GetChildByNameAndLayer("Canvas", 5, transform)?.transform);
+//                        DestroyImmediate(BarchartSeries[i]);
+//                        Array.Resize(ref BarchartSeries, i);
+//                    }
+//                }
 
-                for (var i = 0; i < BarchartSeries.Length; i++)
-                {
-                    if(BarchartSeries[i] != null)
-                    {
-                        BarchartSeries[i].SeriesIndex = i;
-                        BarchartSeries[i].FlushBars();
-                    }
-                }
+//                for (var i = 0; i < BarchartSeries.Length; i++)
+//                {
+//                    if(BarchartSeries[i] != null)
+//                    {
+//                        BarchartSeries[i].SeriesIndex = i;
+//                        BarchartSeries[i].FlushBars();
+//                    }
+//                }
 
-                break;
-            default:
-                break;
-        }
-    }
+//                break;
+//            default:
+//                break;
+//        }
+//    }
 
-    private void SetupRenderer(Transform parentTransform)
-    {
-        int initialImageRendererPosition = 0;
-        foreach(var arObject in GameObject.FindGameObjectsWithTag("ARObject"))
-        {
-            var imageRenderer = ObjectIterator.GetChildByNameAndLayer("ImageRenderer", 5, arObject.transform);
+//    private void SetupRenderer(Transform parentTransform)
+//    {
+//        int initialImageRendererPosition = 0;
+//        foreach(var arObject in GameObject.FindGameObjectsWithTag("ARObject"))
+//        {
+//            var imageRenderer = ObjectIterator.GetChildByNameAndLayer("ImageRenderer", 5, arObject.transform);
 
-            if(imageRenderer)
-            {
-                imageRenderer.transform.localPosition = new Vector3
-                (
-                    imageRenderer.transform.localPosition.x,
-                    imageRenderer.transform.localPosition.y,
-                    initialImageRendererPosition += 100
-                );
-            }
-        }
+//            if(imageRenderer)
+//            {
+//                imageRenderer.transform.localPosition = new Vector3
+//                (
+//                    imageRenderer.transform.localPosition.x,
+//                    imageRenderer.transform.localPosition.y,
+//                    initialImageRendererPosition += 100
+//                );
+//            }
+//        }
 
-        if (RenderTexture == null)
-        {
-            var ImageRenderer = ObjectIterator.GetChildByNameAndLayer("ImageRenderer", 5, parentTransform);
-            var BgRectTransform = ObjectIterator.GetChildByNameAndLayer("Bg", 5, ImageRenderer.transform)?.GetComponent<RectTransform>();
+//        if (RenderTexture == null)
+//        {
+//            var ImageRenderer = ObjectIterator.GetChildByNameAndLayer("ImageRenderer", 5, parentTransform);
+//            var BgRectTransform = ObjectIterator.GetChildByNameAndLayer("Bg", 5, ImageRenderer.transform)?.GetComponent<RectTransform>();
 
-            RenderTexture = new RenderTexture((int) BgRectTransform.rect.width, (int)BgRectTransform.rect.height, 16, RenderTextureFormat.ARGB32);
-            RenderTexture.depth = 24;
+//            RenderTexture = new RenderTexture((int) BgRectTransform.rect.width, (int)BgRectTransform.rect.height, 16, RenderTextureFormat.ARGB32);
+//            RenderTexture.depth = 24;
 
-            var createdWithSuccess = RenderTexture.Create();
+//            var createdWithSuccess = RenderTexture.Create();
 
-            if (!createdWithSuccess)
-                RenderTexture = null;
-        }
+//            if (!createdWithSuccess)
+//                RenderTexture = null;
+//        }
 
-        if (RenderCamera == null)
-            RenderCamera = ObjectIterator.GetChildByNameAndLayer("Camera", 5, parentTransform)?.GetComponent<Camera>();
+//        if (RenderCamera == null)
+//            RenderCamera = ObjectIterator.GetChildByNameAndLayer("Camera", 5, parentTransform)?.GetComponent<Camera>();
 
-        if (RenderCamera != null && RenderCamera.targetTexture == null)
-            RenderCamera.targetTexture = RenderTexture;
+//        if (RenderCamera != null && RenderCamera.targetTexture == null)
+//            RenderCamera.targetTexture = RenderTexture;
 
-        if (RenderMaterial == null && RenderCamera?.targetTexture != null)
-        {
-            RenderMaterial = new Material(Shader.Find("Unlit/Transparent"));
-            RenderMaterial.SetTexture("_MainTex", RenderCamera.targetTexture);
-        }
+//        if (RenderMaterial == null && RenderCamera?.targetTexture != null)
+//        {
+//            RenderMaterial = new Material(Shader.Find("Unlit/Transparent"));
+//            RenderMaterial.SetTexture("_MainTex", RenderCamera.targetTexture);
+//        }
 
-        var mesh = ObjectIterator.GetChildByNameAndLayer("RenderedSurface", 0, parentTransform)?.GetComponent<MeshRenderer>();
+//        var mesh = ObjectIterator.GetChildByNameAndLayer("RenderedSurface", 0, parentTransform)?.GetComponent<MeshRenderer>();
 
-        if (RenderMaterial != null)
-            mesh.sharedMaterial = RenderMaterial;
+//        if (RenderMaterial != null)
+//            mesh.sharedMaterial = RenderMaterial;
 
 
-        if (mesh?.sharedMaterials != null && mesh?.sharedMaterials?.Length > 1)
-        {
-            mesh.sharedMaterials = new Material[] { RenderMaterial };
-        }
-    }
+//        if (mesh?.sharedMaterials != null && mesh?.sharedMaterials?.Length > 1)
+//        {
+//            mesh.sharedMaterials = new Material[] { RenderMaterial };
+//        }
+//    }
 
-    private void Start()
-    {
-        Mounted = false;
-    }
+//    private void Start()
+//    {
+//        Mounted = false;
+//    }
 
-    void Update()
-    {
-        if(!Mounted)
-        {
-            SetupRenderer(transform);
-            Mounted = true;
-        }
+//    void Update()
+//    {
+//        if(!Mounted)
+//        {
+//            SetupRenderer(transform);
+//            Mounted = true;
+//        }
 
-        FlushSeriesComponents();
-    }
-}
+//        FlushSeriesComponents();
+//    }
+//}

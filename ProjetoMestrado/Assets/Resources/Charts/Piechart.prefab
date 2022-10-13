@@ -178,7 +178,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1718637058871776766}
   - component: {fileID: 1718637058871776763}
-  - component: {fileID: 1718637058871776760}
   - component: {fileID: 1718637058871776767}
   m_Layer: 0
   m_Name: Piechart
@@ -216,24 +215,6 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 0.06, y: 0.06, z: 0.04}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &1718637058871776760
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1718637058871776764}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 58bb1b69381f8164aadc8ecfeb4e7934, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  VisualizationType: 0
-  NumberOfSeries: 0
-  Title: 
-  UnitSymbol: 
-  UnitPosition: 0
-  ShowUnit: 0
 --- !u!114 &1718637058871776767
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -246,6 +227,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 22c00eaa96eda0a4781c7a0519e0102e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Properties:
+    VisualizationType: 0
+    NumberOfSeries: 0
+    Title: 
+    UnitSymbol: 
+    UnitPosition: 0
+    ShowUnit: 0
 --- !u!1 &1718637059033351189
 GameObject:
   m_ObjectHideFlags: 0
