@@ -292,6 +292,7 @@ public class Chart : MonoBehaviour
                 Series = GetComponents<PieSeries>();
                 break;
             case VisualizationTypeEnum.StackedBarChart:
+                Series = GetComponents<BarchartSeries>();
                 break;
             default:
                 throw new Exception("Invalid VisualizationType!");
@@ -307,6 +308,7 @@ public class Chart : MonoBehaviour
                     Series = new PieSeries[Properties.NumberOfSeries];
                     break;
                 case VisualizationTypeEnum.StackedBarChart:
+                    Series = new BarchartSeries[Properties.NumberOfSeries];
                     break;
                 default:
                     throw new Exception("Invalid VisualizationType!");
@@ -320,6 +322,7 @@ public class Chart : MonoBehaviour
                         Series[i] = gameObject.AddComponent<PieSeries>();
                         break;
                     case VisualizationTypeEnum.StackedBarChart:
+                        Series[i] = gameObject.AddComponent<BarchartSeries>();
                         break;
                     default:
                         throw new Exception("Invalid VisualizationType!");

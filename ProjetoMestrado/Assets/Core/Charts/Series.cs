@@ -113,14 +113,6 @@ public SeriesProperties Properties;
     }
 
     public int GetIndex() => Properties.Index;
-    //{
-    //    if(Index != null)
-    //    {
-    //        return Index.Value;
-    //    }
-
-    //    throw new InvalidOperationException("Index must have a value! Use SetSeriesIndex function to Set it.");
-    //}
 
     protected void Start()
     {
@@ -138,8 +130,6 @@ public SeriesProperties Properties;
 
     protected void Update()
     {
-        //Debug.Log("On update Name");
-        //Debug.Log(Name);
         if(Entries == null)
         {
             Entries = new List<Entry<T>>();
@@ -159,7 +149,6 @@ public SeriesProperties Properties;
 
         if(PropertiesWatcher.Changed || EntriesWatcher.Changed)
         {
-            Debug.Log("Changed series");
             Render();
         }
     }

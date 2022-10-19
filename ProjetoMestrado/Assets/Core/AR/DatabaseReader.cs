@@ -24,12 +24,12 @@ public class SeriesJSON
 [Serializable]
 public class ChartJSON
 {
-    public VisualizationTypeEnum VisualizationType;
+    public string VisualizationType;
     public int NumberOfSeries;
     public string Title;
     public List<SeriesJSON> Series;
 
-    public override string ToString() => $"Chart {Title} with {NumberOfSeries} series\n" +
+    public override string ToString() => $"{VisualizationType} {Title} with {NumberOfSeries} series\n" +
         $"{string.Join("\n", Series)}";
 }
 
@@ -37,7 +37,8 @@ public class ChartJSON
 public class DatabaseReader : MonoBehaviour
 {
     protected ChartJSON Data = null;
-    public bool GeneratePiechart = false;
+    public VisualizationTypeEnum ChartVisualizationType = VisualizationTypeEnum.Piechart;
+    public bool GenerateChart = false;
     // Start is called before the first frame update
     void Start()
     {
@@ -47,22 +48,38 @@ public class DatabaseReader : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(GeneratePiechart)
+        if(GenerateChart)
         {
-            TextAsset textAsset = Resources.Load<TextAsset>("StaticDatasources/Piechart");
+            var assetPath = ChartVisualizationType == VisualizationTypeEnum.Piechart
+                ? "StaticDatasources/Piechart"
+                : ChartVisualizationType == VisualizationTypeEnum.StackedBarChart
+                ? "StaticDatasources/Barchart"
+                : string.Empty;
+
+            TextAsset textAsset = Resources.Load<TextAsset>(assetPath);
 
             Data = JsonUtility.FromJson<ChartJSON>(textAsset.text);
 
             Debug.Log(Data);
 
-            var PiechartPrefab = Resources.Load<GameObject>("Charts/Piechart");
-            var Instance = Instantiate(PiechartPrefab);
+            var prefabName = ChartVisualizationType == VisualizationTypeEnum.Piechart
+                ? "Charts/Piechart"
+                : ChartVisualizationType == VisualizationTypeEnum.StackedBarChart
+                ? "Charts/Barchart"
+                : string.Empty;
+
+            var ChartPrefab = Resources.Load<GameObject>(prefabName);
+            var Instance = Instantiate(ChartPrefab);
 
             //DestroyImmediate(Instance.GetComponent<ChartBuilder>());
 
             var Chart = Instance.GetComponent<Chart>();
 
-            Chart.Properties.VisualizationType = Data.VisualizationType;
+            Chart.Properties.VisualizationType = Data.VisualizationType == "Piechart"
+                ? VisualizationTypeEnum.Piechart
+                : Data.VisualizationType == "StackedBarChart"
+                ? VisualizationTypeEnum.StackedBarChart
+                : VisualizationTypeEnum.Piechart;
             Chart.Properties.NumberOfSeries = Data.NumberOfSeries;
             Chart.Properties.Title = Data.Title;
 
@@ -74,12 +91,13 @@ public class DatabaseReader : MonoBehaviour
                     UpdatePiechartSeries(Instance.GetComponents<PieSeries>().ToList());
                     break;
                 case VisualizationTypeEnum.StackedBarChart:
+                    UpdateBarchartSeries(Instance.GetComponents<BarchartSeries>().ToList());
                     break;
                 default:
                     break;
             }
 
-            GeneratePiechart = false;
+            GenerateChart = false;
         }
     }
 
@@ -93,6 +111,23 @@ public class DatabaseReader : MonoBehaviour
                 .ToList();
 
             PieSeries[i].Render();
+
+            //Debug.Log("PieSeries");
+            //Debug.Log(PieSeries[i].Properties.Name);
+            //Debug.Log(string.Join("\n", PieSeries[i].Entries.Select(x => $"{x.Key}: {x.Value}")));
+        }
+    }
+
+    protected void UpdateBarchartSeries(List<BarchartSeries> BarchartSeries)
+    {
+        for (var i = 0; i < BarchartSeries.Count; i++)
+        {
+            BarchartSeries[i].Properties.Name = Data.Series[i].Name;
+            BarchartSeries[i].Entries = Data.Series[i].Entries
+                .Select(x => new Entry<float>() { Key = x.Key, Value = x.Value })
+                .ToList();
+
+            BarchartSeries[i].Render();
 
             //Debug.Log("PieSeries");
             //Debug.Log(PieSeries[i].Properties.Name);

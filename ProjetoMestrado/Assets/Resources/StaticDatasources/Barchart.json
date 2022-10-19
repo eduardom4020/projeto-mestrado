@@ -1,0 +1,25 @@
+{
+  "VisualizationType": "StackedBarChart",
+  "NumberOfSeries": 1,
+  "Title": "Test Barchart",
+
+  "Series": [
+    {
+      "Name": "Test",
+      "Entries": [
+        {
+          "Key": "Entry_1",
+          "Value": 15.0
+        },
+        {
+          "Key": "Entry_2",
+          "Value": 5.0
+        },
+        {
+          "Key": "Entry_3",
+          "Value": 20.0
+        }
+      ]
+    }
+  ]
+}

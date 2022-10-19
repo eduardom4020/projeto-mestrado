@@ -1,312 +1,187 @@
-//using System;
-//using System.Collections;
-//using System.Collections.Generic;
-//using System.Linq;
-//using TMPro;
-//using UnityEngine;
-//using UnityEngine.UI;
-
-//public class BarchartSeries : Series
-//{
-//    public float SeriesMaxValue { get; protected set; } = 0.0f;
-
-//    public int EntryIndex { get; set; } = 0;
-//    protected List<Color32> Colors = new List<Color32>();
-
-//    public BarchartSeries(string Name, List<SeriesValue> Entries) : base(Name, Entries)
-//    {
-//    }
-
-//    public BarchartSeries(string Name) : base(Name)
-//    {
-//    }
-
-//    public override void Render(Transform parent)
-//    {
-//        var barchartSeries = Resources.Load<GameObject>("Charts/Series/BarchartSeries/BarchartSeries");
-//        var instantiatedSeries = Instantiate(barchartSeries, parent);
-//        instantiatedSeries.name = GameObjectSeriesName;
-
-//        Colors = new List<Color32>
-//        {
-//            new Color32(49, 86, 230, 255),
-//            new Color32(255, 61, 253, 255),
-//            new Color32(24, 66, 137, 255),
-//            new Color32(165, 64, 217, 255)
-//        };
-
-//        //SeriesMaxValue = 0.0f;
-//    }
-
-//    protected override string OnKeyChanged(SeriesValue seriesValue, string oldValue)
-//    {
-//        Debug.Log("On key changed!");
-//        var entriesGameObject = GetEntriesGameObject();
-
-//        if (entriesGameObject == null)
-//        {
-//            return null;
-//        }
-
-//        var entryGameObject = ObjectIterator.GetChildByNameAndLayer($"{GameObjectSeriesName}_{oldValue}", 5, entriesGameObject.transform);
-
-//        if (entryGameObject != null)
-//        {
-//            entryGameObject.name = $"{GameObjectSeriesName}_{seriesValue.Key}";
-//        }
-
-//        return null;
-//    }
-
-//    protected void CalculatePlotMaxValue()
-//    {
-//        var StackedSeriesMaxValues = new List<float>();
-
-//        var BarchartSeries = GetComponents<BarchartSeries>();
-//        //.Where((_, i) => i != SeriesIndex)
-//        //.ToList();
-
-//        foreach (var Series in BarchartSeries)
-//        {
-//            for (var i = 0; i < Series.Entries.Count; i++)
-//            {
-//                if (StackedSeriesMaxValues.Count < i + 1)
-//                {
-//                    StackedSeriesMaxValues.Add(0);
-//                }
-
-//                StackedSeriesMaxValues[i] += Series.Entries[i].Value;
-//            }
-//        }
-
-//        SeriesMaxValue = StackedSeriesMaxValues.Count > 0 ? StackedSeriesMaxValues.Max() : 0.0f;
-//    }
-
-//    protected override string OnValueChanged(SeriesValue seriesValue, float oldValue)
-//    {
-//        Debug.Log("On value changed!");
-//        var entriesGameObject = GetEntriesGameObject();
-
-//        if (entriesGameObject == null)
-//        {
-//            return null;
-//        }
-
-//        var plotHeight = entriesGameObject.GetComponent<RectTransform>().rect.height;
-
-//        CalculatePlotMaxValue();
-
-//        var PreviousBarchartSeries = GetComponents<BarchartSeries>()
-//            .Where((_, i) => i < SeriesIndex)
-//            .ToList();
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using TMPro;
+using UnityEngine;
+using UnityEngine.UI;
+
+public class BarchartSeries : Series<float>
+{
+    public float SeriesMaxValue { get; protected set; } = 0.0f;
+
+    private bool CompareFloatEntries(float x, float y) => x == y;
+
+    protected override void SetEntriesValueComparers()
+    {
+        foreach (var entry in Entries)
+        {
+            entry.ValueComparer = CompareFloatEntries;
+        }
+    }
 
-//        //foreach (var Series in BarchartSeries)
-//        //{
-//        //    for (var i = 0; i < Series.Entries.Count; i++)
-//        //    {
-//        //        if (StackedSeriesMaxValues.Count < i + 1)
-//        //        {
-//        //            StackedSeriesMaxValues.Add(0);
-//        //        }
+    protected void CalculatePlotMaxValue()
+    {
+        var StackedSeriesMaxValues = new List<float>();
 
-//        //        StackedSeriesMaxValues[i] += Series.Entries[i].Value;
-//        //    }
-//        //}
+        var BarchartSeries = GetComponents<BarchartSeries>();
 
-//        for (var i = 0; i < Entries.Count; i++)
-//        {
-//            var entry = Entries[i];
+        foreach (var Series in BarchartSeries)
+        {
+            for (var i = 0; i < Series.Entries.Count; i++)
+            {
+                if (StackedSeriesMaxValues.Count < i + 1)
+                {
+                    StackedSeriesMaxValues.Add(0);
+                }
 
-//            var instantiatedEntry = ObjectIterator.GetChildByNameAndLayer($"{GameObjectSeriesName}_{entry.Key}", 5, entriesGameObject.transform);
-//            var bar = ObjectIterator.GetChildByNameAndLayer("Bar", 5, instantiatedEntry.transform);
-//            var label = ObjectIterator.GetChildByNameAndLayer("Label", 5, bar.transform);
+                StackedSeriesMaxValues[i] += Series.Entries[i].Value;
+            }
+        }
 
-//            var currLabelPosition = label.GetComponent<RectTransform>().localPosition;
+        SeriesMaxValue = StackedSeriesMaxValues.Count > 0 ? StackedSeriesMaxValues.Max() : 0.0f;
+    }
 
-//            var previousAccValues = PreviousBarchartSeries.Sum(x => x.Entries[i].Value);
+    protected void PlaceBar(int index, GameObject instantiatedEntry, GameObject bar)
+    {
+        var plotSize = instantiatedEntry.GetComponent<RectTransform>().rect.width;
 
-//            //Debug.Log("previousAccValues");
-//            //Debug.Log(previousAccValues);
+        var maximumPlacedBars = 0;
 
-//            var barRelativeHeight = (previousAccValues + entry.Value) / SeriesMaxValue;
-//            bar.GetComponent<Image>().fillAmount = barRelativeHeight;
+        var BarchartSeries = GetComponents<BarchartSeries>();
 
+        foreach (var Series in BarchartSeries)
+        {
+            if (maximumPlacedBars < Series?.Entries?.Count)
+            {
+                maximumPlacedBars = Series.Entries.Count;
+            }
+        }
 
-//            var barMask = ObjectIterator.GetChildByNameAndLayer("BarMask", 5, instantiatedEntry.transform);
+        var sliceSize = 1.0f / maximumPlacedBars;
 
-//            var maskRelativeHeight = (1 - entry.Value) / SeriesMaxValue;
-//            barMask.GetComponent<Image>().fillAmount = maskRelativeHeight;
+        var posX = (sliceSize * index + sliceSize / 2.0f) * plotSize;
 
-//            if (entry.Value > 0)
-//            {
-//                label.GetComponent<RectTransform>().localPosition = new Vector3(
-//                    currLabelPosition.x,
-//                    (barRelativeHeight * plotHeight - plotHeight) + 180,
-//                    currLabelPosition.z
-//                );
-//                label.GetComponent<TMP_Text>().SetText($"{entry.Value}");
-//            }
-//            else
-//            {
-//                label.GetComponent<RectTransform>().localPosition = new Vector3(currLabelPosition.x, (plotHeight * -1.0f) + 180, currLabelPosition.z);
-//                label.GetComponent<TMP_Text>().SetText(string.Empty);
-//            }
-//        }
+        //TODO: Adjust this size and positioning
 
-//        return null;
+        var rectTransformPosition = bar.GetComponent<RectTransform>().localPosition;
+        bar.GetComponent<RectTransform>().localPosition = new Vector3(posX - 350, rectTransformPosition.y, rectTransformPosition.z);
+    }
 
-//    }
+    public void FlushSeries()
+    {
+        var piechartSeries = Resources.Load<GameObject>("Charts/Series/BarchartSeries/BarchartSeries");
 
-//    protected void PlaceBar(int index, GameObject instantiatedEntry, GameObject bar)
-//    {
-//        var plotSize = instantiatedEntry.GetComponent<RectTransform>().rect.width;
+        var canvasTransform = ObjectIterator.GetChildByNameAndLayer("Canvas", 5, transform)?.transform;
 
-//        var maximumPlacedBars = 0;
+        var instantiatedSeries = ObjectIterator.GetChildByNameAndLayer(GameObjectSeriesName, 5, canvasTransform) ??
+            Instantiate(piechartSeries, canvasTransform);
 
-//        var BarchartSeries = GetComponents<BarchartSeries>();
+        instantiatedSeries.name = GameObjectSeriesName;
 
-//        foreach (var Series in BarchartSeries)
-//        {
-//            if (maximumPlacedBars < Series?.Entries?.Count)
-//            {
-//                maximumPlacedBars = Series.Entries.Count;
-//            }
-//        }
+        // Todo: Execute something when series name chages
 
-//        var sliceSize = 1.0f / maximumPlacedBars;
+        var entriesGameObject = ObjectIterator.GetChildByNameAndLayer("Entries", 5, instantiatedSeries.transform);
 
-//        var posX = (sliceSize * index + sliceSize / 2.0f) * plotSize;
+        foreach (var Entry in Entries)
+        {
+            var sameNameEntries = Entries.Where(x => x.Key == Entry.Key).ToList();
+            if (sameNameEntries.Count > 1)
+            {
+                for (var i = 1; i < sameNameEntries.Count; i++)
+                {
+                    sameNameEntries[i].Key += $" ({i})";
+                }
+            }
+        }
+
+        foreach (Transform entryObject in entriesGameObject.transform)
+        {
+            if (Entries.Count(x => $"{GameObjectSeriesName}_Entry_{x.Key}" == entryObject.gameObject.name) != 1)
+            {
+                DestroyImmediate(entryObject.gameObject);
+            }
+        }
 
-//        var rectTransformPosition = bar.GetComponent<RectTransform>().localPosition;
-//        bar.GetComponent<RectTransform>().localPosition = new Vector3(posX - 350, rectTransformPosition.y, rectTransformPosition.z);
-//    }
+        var barchartEntry = Resources.Load<GameObject>("Charts/Series/BarchartSeries/Entry");
 
-//    public void FlushBars()
-//    {
-//        var entriesGameObject = GetEntriesGameObject();
+        for (var i = 0; i < Entries.Count; i++)
+        {
+            var Entry = Entries[i];
 
-//        if (entriesGameObject == null)
-//        {
-//            return;
-//        }
+            var instantiatedEntry = ObjectIterator.GetChildByNameAndLayer($"{GameObjectSeriesName}_Entry_{Entry.Key}", 5, entriesGameObject.transform) ??
+                    Instantiate(barchartEntry, entriesGameObject.transform);
 
-//        EntryIndex = 0;
+            var barMask = ObjectIterator.GetChildByNameAndLayer("BarMask", 5, instantiatedEntry.transform);
 
-//        foreach (var entry in Entries)
-//        {
-//            var instantiatedEntry = ObjectIterator.GetChildByNameAndLayer($"{GameObjectSeriesName}_{entry.Key}", 5, entriesGameObject.transform);
-//            var barMask = ObjectIterator.GetChildByNameAndLayer("BarMask", 5, instantiatedEntry.transform);
+            instantiatedEntry.name = $"{GameObjectSeriesName}_Entry_{Entry.Key}";
 
-//            PlaceBar(EntryIndex, instantiatedEntry, barMask);
-//            EntryIndex += 1;
-//        }
+            PlaceBar(i, instantiatedEntry, barMask);
+        }
 
-//        EntryIndex = 0;
+        var plotHeight = entriesGameObject.GetComponent<RectTransform>().rect.height;
 
-//        var plotHeight = entriesGameObject.GetComponent<RectTransform>().rect.height;
+        CalculatePlotMaxValue();
 
-//        CalculatePlotMaxValue();
+        var PreviousBarchartSeries = GetComponents<BarchartSeries>()
+            .Where((_, i) => i < GetIndex() - 1)
+            .ToList();
 
-//        var PreviousBarchartSeries = GetComponents<BarchartSeries>()
-//            .Where((_, i) => i < SeriesIndex)
-//            .ToList();
+        for (var i = 0; i < Entries.Count; i++)
+        {
+            var Entry = Entries[i];
 
-//        for (var i = 0; i < Entries.Count; i++)
-//        {
-//            var entry = Entries[i];
+            var instantiatedEntry = ObjectIterator.GetChildByNameAndLayer($"{GameObjectSeriesName}_Entry_{Entry.Key}", 5, entriesGameObject.transform);
+            var bar = ObjectIterator.GetChildByNameAndLayer("Bar", 5, instantiatedEntry.transform);
+            var label = ObjectIterator.GetChildByNameAndLayer("Label", 5, bar.transform);
 
-//            var instantiatedEntry = ObjectIterator.GetChildByNameAndLayer($"{GameObjectSeriesName}_{entry.Key}", 5, entriesGameObject.transform);
-//            var bar = ObjectIterator.GetChildByNameAndLayer("Bar", 5, instantiatedEntry.transform);
-//            var label = ObjectIterator.GetChildByNameAndLayer("Label", 5, bar.transform);
+            var currLabelPosition = label.GetComponent<RectTransform>().localPosition;
 
-//            var currLabelPosition = label.GetComponent<RectTransform>().localPosition;
+            var previousAccValues = PreviousBarchartSeries.Sum(x => x.Entries.Count > i ? x.Entries[i].Value : 0);
 
-//            var previousAccValues = PreviousBarchartSeries.Sum(x => x.Entries.Count > i ? x.Entries[i].Value : 0);
+            var barRelativeHeight = (previousAccValues + Entry.Value) / SeriesMaxValue;
+            bar.GetComponent<Image>().fillAmount = barRelativeHeight;
 
-//            var barRelativeHeight = (previousAccValues + entry.Value) / SeriesMaxValue;
-//            bar.GetComponent<Image>().fillAmount = barRelativeHeight;
+            var barMask = ObjectIterator.GetChildByNameAndLayer("BarMask", 5, instantiatedEntry.transform);
 
+            var maskRelativeHeight = 1.0f - previousAccValues / SeriesMaxValue;
 
-//            var barMask = ObjectIterator.GetChildByNameAndLayer("BarMask", 5, instantiatedEntry.transform);
+            barMask.GetComponent<Image>().fillAmount = maskRelativeHeight;
 
-//            var maskRelativeHeight = 1.0f - previousAccValues / SeriesMaxValue;
+            if (i < Colors.Count)
+            {
+                var image = ObjectIterator.GetChildByNameAndLayer("Bar", 5, barMask.transform)?.GetComponent<Image>();
+                image.color = Colors[GetIndex() - 1];
+            }
 
-//            barMask.GetComponent<Image>().fillAmount = maskRelativeHeight;
+            if (Entry.Value > 0)
+            {
+                label.GetComponent<RectTransform>().localPosition = new Vector3(
+                    currLabelPosition.x,
+                    (barRelativeHeight * plotHeight - plotHeight) + 180,
+                    currLabelPosition.z
+                );
+                label.GetComponent<TMP_Text>().SetText($"{Entry.Value}");
+            }
+            else
+            {
+                label.GetComponent<RectTransform>().localPosition = new Vector3(currLabelPosition.x, (plotHeight * -1.0f) + 180, currLabelPosition.z);
+                label.GetComponent<TMP_Text>().SetText(string.Empty);
+            }
+        }
+    }
 
-//            if (entry.Value > 0)
-//            {
-//                label.GetComponent<RectTransform>().localPosition = new Vector3(
-//                    currLabelPosition.x,
-//                    (barRelativeHeight * plotHeight - plotHeight) + 180,
-//                    currLabelPosition.z
-//                );
-//                label.GetComponent<TMP_Text>().SetText($"{entry.Value}");
-//            }
-//            else
-//            {
-//                label.GetComponent<RectTransform>().localPosition = new Vector3(currLabelPosition.x, (plotHeight * -1.0f) + 180, currLabelPosition.z);
-//                label.GetComponent<TMP_Text>().SetText(string.Empty);
-//            }
-//        }
-//    }
+    public override void Render()
+    {
+        FlushSeries();
 
-//    public override void RenderEntry(SeriesValue Entry, Transform parent)
-//    {
-//        Debug.Log("Rendered entry");
+        var OtherBarchartSeries = GetComponents<BarchartSeries>()
+            .Where((_, i) => i != GetIndex() - 1)
+            .ToList();
 
-//        var barchartEntry = Resources.Load<GameObject>("Charts/Series/BarchartSeries/Entry");
-//        var instantiatedEntry = Instantiate(barchartEntry, parent);
-//        instantiatedEntry.name = $"{GameObjectSeriesName}_{Entry.Key}";
-
-//        var barMask = ObjectIterator.GetChildByNameAndLayer("BarMask", 5, instantiatedEntry.transform);
-
-//        PlaceBar(EntryIndex, instantiatedEntry, barMask);
-
-//        if(SeriesIndex != null)
-//        {
-//            var bar = ObjectIterator.GetChildByNameAndLayer("Bar", 5, barMask.transform);
-//            bar.GetComponent<Image>().color = Colors[SeriesIndex.Value];
-//        }
-
-//        Entry.Key = $"Entry_{Entries.Count}";
-//        Entry.Value = 0;
-
-//        OnKeyChanged(Entry, string.Empty);
-//        OnValueChanged(Entry, 0);
-//    }
-
-//    protected override void OnEntriesChanged(List<SeriesValue> oldValue)
-//    {
-//        var entriesGameObject = GetEntriesGameObject();
-
-//        if(entriesGameObject == null)
-//        {
-//            return;
-//        }
-
-//        base.OnEntriesChanged(oldValue);
-
-//        EntryIndex = 0;
-
-//        var oldEntries = Entries.Take(oldValue.Count);
-
-//        foreach (var entry in oldEntries)
-//        {
-//            var instantiatedEntry = ObjectIterator.GetChildByNameAndLayer($"{GameObjectSeriesName}_{entry.Key}", 5, entriesGameObject.transform);
-//            var barMask = ObjectIterator.GetChildByNameAndLayer("BarMask", 5, instantiatedEntry.transform);
-
-//            PlaceBar(EntryIndex, instantiatedEntry, barMask);
-//            EntryIndex += 1;
-//        }
-
-//        var newEntries = Entries.Skip(oldValue.Count);
-
-//        foreach (var entry in newEntries)
-//        {
-//            RenderEntry(entry, entriesGameObject.transform);
-//            EntryIndex += 1;
-//        }
-
-//        EntryIndex = 0;
-//    }
-//}
+        foreach(var OtherSeries in OtherBarchartSeries)
+        {
+            OtherSeries.FlushSeries();
+        }
+    }
+}
