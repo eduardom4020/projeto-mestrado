@@ -152,7 +152,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a28b0c3e2e8b74042977f36f3707395a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ChartVisualizationType: 0
+  ChartVisualizationType: 1
   GenerateChart: 0
 --- !u!4 &132157963
 Transform:

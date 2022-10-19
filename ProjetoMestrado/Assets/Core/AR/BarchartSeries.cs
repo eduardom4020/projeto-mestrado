@@ -28,7 +28,7 @@ public class BarchartSeries : Series<float>
 
         foreach (var Series in BarchartSeries)
         {
-            for (var i = 0; i < Series.Entries.Count; i++)
+            for (var i = 0; i < (Series.Entries?.Count ?? 0); i++)
             {
                 if (StackedSeriesMaxValues.Count < i + 1)
                 {
@@ -78,6 +78,11 @@ public class BarchartSeries : Series<float>
             Instantiate(piechartSeries, canvasTransform);
 
         instantiatedSeries.name = GameObjectSeriesName;
+
+        if(Entries == null)
+        {
+            return;
+        }
 
         // Todo: Execute something when series name chages
 

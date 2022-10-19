@@ -116,7 +116,11 @@ public SeriesProperties Properties;
 
     protected void Start()
     {
-        SetSeriesIndex();
+        if(Properties.Index <= 0)
+        {
+            SetSeriesIndex();
+        }
+        
         Entries ??= new List<Entry<T>>();
         SetEntriesValueComparers();
 
