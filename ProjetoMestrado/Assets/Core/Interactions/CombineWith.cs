@@ -15,7 +15,7 @@ public class CombineWith : MonoBehaviour
 
     private void Start()
     {
-        thisChart = transform.parent.GetComponent<Chart>();
+        thisChart = transform?.parent.GetComponent<Chart>();
     }
 
     private void OnTriggerEnter(Collider other)
@@ -48,10 +48,13 @@ public class CombineWith : MonoBehaviour
                     : string.Empty;
 
                 var ChartPrefab = Resources.Load<GameObject>(prefabName);
-                Instance = Instantiate(ChartPrefab);
+                Instance = GameObject.Find($"{resultsInVisualizationType}_{thisChart.Id}")
+                    ?? GameObject.Find($"{resultsInVisualizationType}_{otherChart.Id}")
+                    ?? Instantiate(ChartPrefab);
 
                 var Chart = Instance.GetComponent<Chart>();
 
+                Chart.Id = thisChart.Id;
                 Chart.Properties.VisualizationType = resultsInVisualizationType;
                 Chart.Properties.NumberOfSeries = Math.Max(currentPiechartSeries.Entries.Count, otherPiechartSeries.Entries.Count);
                 Chart.Properties.Title = $"{thisChart.Properties.Title} / {otherChart.Properties.Title}";
@@ -71,8 +74,16 @@ public class CombineWith : MonoBehaviour
 
                     BarchartSeries[i].Entries = new List<Entry<float>>
                     {
-                        new Entry<float>() { Key = currentPiechartSeries.Entries[i].Key, Value = currentPiechartSeries.Entries[i].Value },
-                        new Entry<float>() { Key = otherPiechartSeries.Entries[i].Key, Value = otherPiechartSeries.Entries[i].Value }
+                        new Entry<float>()
+                        {
+                            Key = i < currentPiechartSeries.Entries.Count ? currentPiechartSeries.Entries[i].Key : $"Entry_{i+1}",
+                            Value = i < currentPiechartSeries.Entries.Count ? currentPiechartSeries.Entries[i].Value : 0.0f
+                        },
+                        new Entry<float>()
+                        {
+                            Key = i < otherPiechartSeries.Entries.Count ? otherPiechartSeries.Entries[i].Key : $"Entry_{i+1}",
+                            Value = i < otherPiechartSeries.Entries.Count ? otherPiechartSeries.Entries[i].Value : 0.0f
+                        }
                     };
 
                     BarchartSeries[i].Render();

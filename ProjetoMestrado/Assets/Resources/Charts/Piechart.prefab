@@ -177,7 +177,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1718637058871776766}
-  - component: {fileID: 1718637058871776763}
   - component: {fileID: 1718637058871776767}
   m_Layer: 0
   m_Name: Piechart
@@ -202,19 +201,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!65 &1718637058871776763
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1718637058871776764}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 1
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 0.06, y: 0.06, z: 0.04}
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &1718637058871776767
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -396,6 +382,8 @@ GameObject:
   - component: {fileID: 1718637059618982763}
   - component: {fileID: 1718637059618982762}
   - component: {fileID: 1718637059618982761}
+  - component: {fileID: 7165499475435477104}
+  - component: {fileID: 2891229122390303399}
   m_Layer: 0
   m_Name: RenderedSurface
   m_TagString: ARObject
@@ -476,11 +464,41 @@ BoxCollider:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1718637059618982767}
   m_Material: {fileID: 0}
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 0.25}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!54 &7165499475435477104
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1718637059618982767}
+  serializedVersion: 2
+  m_Mass: 0.0000001
+  m_Drag: 0
+  m_AngularDrag: 0
+  m_UseGravity: 0
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
+--- !u!114 &2891229122390303399
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1718637059618982767}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1bd1f31f5e99794478abc9219a134681, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetVisualizationType: 0
+  resultsInVisualizationType: 1
 --- !u!1 &1718637060334744464
 GameObject:
   m_ObjectHideFlags: 0

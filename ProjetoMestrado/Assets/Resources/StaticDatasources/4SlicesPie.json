@@ -1,0 +1,29 @@
+{
+  "VisualizationType": "Piechart",
+  "NumberOfSeries": 1,
+  "Title": "4 Sliced Piechart",
+
+  "Series": [
+    {
+      "Name": "4 Slices series",
+      "Entries": [
+        {
+          "Key": "Entry_1",
+          "Value": 10.0
+        },
+        {
+          "Key": "Entry_2",
+          "Value": 10.0
+        },
+        {
+          "Key": "Entry_3",
+          "Value": 45.0
+        },
+        {
+          "Key": "Entry_4",
+          "Value": 35.0
+        }
+      ]
+    }
+  ]
+}

@@ -34,8 +34,9 @@ public class ChartJSON
 [ExecuteAlways]
 public class DatabaseReader : MonoBehaviour
 {
+    public string FileName = string.Empty;
     protected ChartJSON Data = null;
-    public VisualizationTypeEnum ChartVisualizationType = VisualizationTypeEnum.Piechart;
+    //public VisualizationTypeEnum ChartVisualizationType = VisualizationTypeEnum.Piechart;
     public bool GenerateChart = false;
     // Start is called before the first frame update
     void Start()
@@ -48,15 +49,13 @@ public class DatabaseReader : MonoBehaviour
     {
         if(GenerateChart)
         {
-            var assetPath = ChartVisualizationType == VisualizationTypeEnum.Piechart
-                ? "StaticDatasources/Piechart"
-                : ChartVisualizationType == VisualizationTypeEnum.StackedBarChart
-                ? "StaticDatasources/Barchart"
-                : string.Empty;
+            var assetPath = $"StaticDatasources/{FileName}";
 
             TextAsset textAsset = Resources.Load<TextAsset>(assetPath);
 
             Data = JsonUtility.FromJson<ChartJSON>(textAsset.text);
+
+            var ChartVisualizationType = (VisualizationTypeEnum) Enum.Parse(typeof(VisualizationTypeEnum), Data.VisualizationType);
 
             Debug.Log(Data);
 

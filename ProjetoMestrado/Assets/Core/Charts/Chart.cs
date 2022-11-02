@@ -72,6 +72,8 @@ public class ChartProperties : IStateObservable
 [ExecuteAlways]
 public class Chart : MonoBehaviour
 {
+    public Guid? Id { get; set; }
+
     private RenderTexture RenderTexture;
     private Camera RenderCamera;
     private Material RenderMaterial;
@@ -253,8 +255,12 @@ public class Chart : MonoBehaviour
 
     private void Start()
     {
+        Id = Guid.NewGuid();
+        gameObject.name = $"{Properties.VisualizationType}_{Id}";
+
         SetupRenderer(transform);
         PropertiesWatcher = new StateChangeWatcher(Properties);
+        Render();
     }
 
     void Update()
@@ -277,6 +283,13 @@ public class Chart : MonoBehaviour
 
     public void Render()
     {
+        if(Id == null)
+        {
+            Id = Guid.NewGuid();
+        }
+
+        gameObject.name = $"{Properties.VisualizationType}_{Id}";
+
         var titleComponent = ObjectIterator.GetChildByNameAndLayer("Title", 5, transform);
 
         if (titleComponent != null)
